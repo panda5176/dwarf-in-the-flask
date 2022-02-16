@@ -15,7 +15,7 @@
     {% if g.user['id'] == post['author_id'] %}
     <a class="link-secondary" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
     {% endif %}
-    <p>{{ post['body'] }}</p>
+    {% autoescape false %}<p>{{ post['body'] }}</p>{% endautoescape %}
 </article>
 {% if not loop.last %}
 <hr>
