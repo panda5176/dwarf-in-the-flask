@@ -53,6 +53,58 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
+    <script>
+        let python_code = `
+            from js import document
+            import numpy as np
+            import scipy.stats as stats
+            import matplotlib.pyplot as plt
+            import io, base64
+
+            def generate_plot_img():
+                # get values from inputs
+                mu = int(document.getElementById('mu').value)
+                sigma = int(document.getElementById('sigma').value)
+                # generate an interval
+                x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
+                # calculate PDF for each value in the x given mu and sigma and plot a line 
+                plt.plot(x, stats.norm.pdf(x, mu, sigma))
+                # create buffer for an image
+                buf = io.BytesIO()
+                # copy the plot into the buffer
+                plt.savefig(buf, format='png')
+                buf.seek(0)
+                # encode the image as Base64 string
+                img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+                # show the image
+                img_tag = document.getElementById('fig')
+                img_tag.src = img_str
+                buf.close()
+
+            div_container = document.createElement('div')
+            div_container.innerHTML = """
+                <br><br>
+                mu:
+                <input id='mu' value='1' type="number">
+                <br><br>
+                sigma:
+                <input id='sigma' value='1' type="number">
+                <br><br>
+                <button onclick='pyodide.runPython("generate_plot_img()")'>Plot</button>
+                <br>
+                <img id="fig" />
+            """
+            document.body.appendChild(div_container)
+            `
+        let pyodide
+        async function main() {
+            pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/" })
+            await pyodide.loadPackage(["numpy", "scipy", "matplotlib"])
+            await pyodide.runPythonAsync(python_code)
+        }
+        main()
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
     <script>
         $(document).ready(function () {
