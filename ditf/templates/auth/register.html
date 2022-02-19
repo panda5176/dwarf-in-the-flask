@@ -1,15 +1,31 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Register{% endblock %}</h1>
+<h2 class="fw-bold border-bottom py-1">{% block title %}Register{% endblock
+    %}
+</h2>
 {% endblock %}
 
 {% block content %}
 <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
+    <div class="col-sm-8 col-md-8 col-lg-6 mx-auto">
+        <div class="my-2 py-2">
+            <label for="username" class="form-label">
+                Username
+            </label>
+            <input name="username" id="username" required class="form-control">
+        </div>
+        <div class="my-2 py-2">
+            <label for="password" class="form-label">
+                Password
+            </label>
+            <input type="password" name="password" id="password" required
+                class="form-control">
+        </div>
+        <div class="text-end py-2">
+            <input type="submit" value="Register"
+                class="btn btn-sm btn-outline-secondary">
+        </div>
+    </div>
 </form>
 {% endblock %}
