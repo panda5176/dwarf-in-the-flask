@@ -7,6 +7,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_paginate import Pagination, get_page_args
 from werkzeug.exceptions import abort
 
 from .auth import login_required
@@ -18,12 +19,23 @@ bp = Blueprint("blog", __name__)
 @bp.route("/")
 def index():
     db = get_db()
+    per_page = 5
+
+    page, _, offset = get_page_args(per_page=per_page)
+    total = db.execute("SELECT COUNT(*) FROM post").fetchone()[0]
     posts = db.execute(
         "SELECT p.id, title, body, created, author_id, username"
         " FROM post p JOIN user u ON p.author_id = u.id"
-        " ORDER BY created DESC"
+        f" ORDER BY created DESC LIMIT {offset}, {per_page}"
     ).fetchall()
-    return render_template("blog/index.html", posts=posts)
+
+    return render_template(
+        "blog/index.html",
+        posts=posts,
+        pagination=Pagination(page=page, total=total, per_page=per_page),
+        search=True,
+        bs_version=5,
+    )
 
 
 @bp.route("/create", methods=("GET", "POST"))
