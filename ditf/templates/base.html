@@ -17,13 +17,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"
         rel="stylesheet">
-    <!-- summernote -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css"
-        rel="stylesheet">
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+    <!-- Markdown editor -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <!-- Syntax highlight -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
 
 <body>
     <div class="container">
@@ -84,10 +85,17 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js">
     </script>
-    <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js">
     </script>
     <script>
-        CKEDITOR.replace('ckeditor');
+        var simplemde = new SimpleMDE(
+            {
+                element: document.getElementById("mdeditor"),
+                renderingConfig: { codeSyntaxHighlighting: true }
+            }
+        );
     </script>
 </body>
 
