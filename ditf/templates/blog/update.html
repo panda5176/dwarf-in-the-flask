@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h2 class="fw-bold border-bottom py-1">{% block title %}Edit "{{
-    post['title'] }}"{% endblock %}</h2>
+<h2 class="fw-bold border-bottom py-1">
+    {% block title %}{{ post['title'] }} - Edit{% endblock %}
+</h2>
 {% endblock %}
 
 {% block content %}
@@ -19,8 +20,9 @@
             required placeholder="Title">
     </div>
     <div class="my-2">
-        <textarea name="body"
-            id="mdeditor">{{ request.form['body'] or post['body'] }}</textarea>
+        <textarea name="body" id="mdeditor">
+            {{ request.form['body'] or post['body'] }}
+        </textarea>
     </div>
     <div class="text-end">
         <input type="submit" value="Save"

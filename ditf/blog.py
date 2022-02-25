@@ -8,6 +8,7 @@ from flask import (
     url_for,
 )
 from flask_paginate import Pagination, get_page_args
+from markdown import markdown
 from werkzeug.exceptions import abort
 
 from .auth import login_required
@@ -84,6 +85,13 @@ def get_post(id, check_author=True):
     return post
 
 
+@bp.route("/<int:id>/detail", methods=("GET",))
+def detail(id):
+    post = get_post(id)
+    body = markdown(post["body"], extensions=["nl2br", "tables", "fenced_code"])
+    return render_template("blog/detail.html", post=post, body=body)
+
+
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
@@ -91,7 +99,7 @@ def update(id):
 
     if request.method == "POST":
         title = request.form["title"]
-        body = request.form["body"]
+        body = request.form["body"].strip()
         error = None
 
         if not title:
@@ -102,7 +110,7 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                "UPDATE post SET title = ?, body = ?" " WHERE id = ?",
+                "UPDATE post SET title = ?, body = ? WHERE id = ?",
                 (title, body, id),
             )
             db.commit()
@@ -119,4 +127,3 @@ def delete(id):
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
     return redirect(url_for("blog.index"))
-

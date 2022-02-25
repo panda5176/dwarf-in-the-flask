@@ -2,6 +2,10 @@
   font-family: 'Nanum Myeongjo', serif;
 }
 
+code, code span {
+  font-family: 'Nanum Gothic Coding', monospace;
+}
+
 .ditf-link {
   text-decoration: none;
   color: inherit;

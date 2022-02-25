@@ -18,18 +18,16 @@
 {% for post in posts %}
 <article class="my-3">
     <div class="d-flex flex-nowrap align-items-center py-2">
-        <h3 class="my-0">{{ post['title'] }}</h3>
-        {% if g.user['id'] == post['author_id'] %}
-        <a class="btn btn-sm btn-outline-secondary mx-2 py-0"
-            href="{{ url_for('blog.update', id=post['id']) }}">
-            Edit
-        </a>
-        {% endif %}
+        <h3 class="my-0">
+            <a href="{{ url_for('blog.detail', id=post['id'])}}"
+                class="ditf-link">
+                {{ post['title'] }}
+            </a>
+        </h3>
     </div>
     <p class="fst-italic">
         by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}
     </p>
-    {% autoescape false %}<p>{{ post['body'] }}</p>{% endautoescape %}
 </article>
 {% if not loop.last %}
 <hr>

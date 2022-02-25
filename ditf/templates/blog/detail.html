@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h2 class="fw-bold border-bottom py-1">
+    {% block title %}{{ post['title'] }}{% endblock %}
+</h2>
+{% endblock %}
+
+{% block content %}
+{% if g.user['id'] == post['author_id'] %}
+<div class="d-flex flex-nowrap">
+    <a class="btn btn-sm btn-outline-secondary"
+        href="{{ url_for('blog.update', id=post['id']) }}">
+        Edit
+    </a>
+    <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+        <input type="submit" value="Delete"
+            onclick="return confirm('Are you sure?');"
+            class="btn btn-sm btn-danger mx-2">
+    </form>
+</div>
+{% endif %}
+<article class="my-3">
+    {{ body | safe }}
+</article>
+{% endblock %}
