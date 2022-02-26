@@ -1,32 +1,51 @@
-import sqlite3
-
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+import psycopg2, psycopg2.extras
 
 
-def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
+def get_conn():
+    if "conn" not in g:
+        db_config = current_app.config["DATABASE"]
+        g.conn = psycopg2.connect(
+            host=db_config["HOST"],
+            user=db_config["USER"],
+            password=db_config["PASSWORD"],
+            port=db_config["PORT"],
         )
-        g.db.row_factory = sqlite3.Row
 
-    return g.db
+    return g.conn
 
 
-def close_db(e=None):
-    db = g.pop("db", None)
+def get_cur():
+    if "cur" not in g:
+        g.cur = get_conn().cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    if db is not None:
-        db.close()
+    return g.cur
+
+
+def close_cur(e=None):
+    cur = g.pop("cur", None)
+
+    if cur is not None:
+        cur.close()
+
+
+def close_conn(e=None):
+    close_cur()
+    conn = g.pop("conn", None)
+
+    if conn is not None:
+        conn.close()
 
 
 def init_db():
-    db = get_db()
+    conn = get_conn()
+    cur = get_cur()
 
-    with current_app.open_resource("schema.sql") as f:
-        db.executescript(f.read().decode("utf8"))
+    with current_app.open_resource("schema.sql") as sql_fh:
+        cur.execute(sql_fh.read().decode("utf8"))
+        conn.commit()
 
 
 @click.command("init-db")
@@ -38,5 +57,5 @@ def init_db_command():
 
 
 def init_app(app):
-    app.teardown_appcontext(close_db)
+    app.teardown_appcontext(close_conn)
     app.cli.add_command(init_db_command)
