@@ -26,9 +26,10 @@ def index():
     cur.execute("SELECT COUNT(*) FROM posts;")
     total = cur.fetchone()[0]
     cur.execute(
-        "SELECT p.id, title, body, created, author_id, username"
-        " FROM posts p JOIN users u ON p.author_id = u.id"
-        f" ORDER BY created DESC;"
+        "SELECT p.id, title, body, created, author_id, username "
+        "FROM posts p JOIN users u ON p.author_id = u.id "
+        "ORDER BY created DESC LIMIT %s OFFSET %s;",
+        (per_page, offset),
     )
     posts = cur.fetchall()
 
