@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block content %}
+<p class="fst-italic">
+    {{ post['views'] }} views, by {{ post['username'] }} on {{
+    post['created'].strftime('%Y-%m-%d') }}
+</p>
 {% for tag in tags %}
 <a class="btn btn-sm btn-secondary" href="#">
     {{ tag['title'] }}

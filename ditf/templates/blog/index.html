@@ -26,7 +26,8 @@
         </h3>
     </div>
     <p class="fst-italic">
-        by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}
+        {{ post['views'] }} views, by {{ post['username'] }} on {{
+        post['created'].strftime('%Y-%m-%d') }}
     </p>
 </article>
 {% if not loop.last %}

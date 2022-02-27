@@ -26,7 +26,7 @@ def index():
     cur.execute("SELECT COUNT(*) FROM posts;")
     total = cur.fetchone()[0]
     cur.execute(
-        "SELECT p.id, title, body, created, author_id, username "
+        "SELECT p.id, title, body, created, author_id, views, username "
         "FROM posts p JOIN users u ON p.author_id = u.id "
         "ORDER BY created DESC LIMIT %s OFFSET %s;",
         (per_page, offset),
@@ -93,7 +93,7 @@ def create():
 def get_post(id):
     cur = get_cur()
     cur.execute(
-        "SELECT p.id, author_id, created, title, body, username "
+        "SELECT p.id, author_id, created, title, body, views, username "
         "FROM posts p JOIN users u ON p.author_id = u.id "
         "WHERE p.id = %s;",
         (id,),
@@ -135,6 +135,14 @@ def detail(id):
     post = get_post(id)
     tags = [get_tag(tag_id[0]) for tag_id in get_tag_ids_from_post_id(id)]
     body = markdown(post["body"], extensions=["nl2br", "tables", "fenced_code"])
+
+    conn = get_conn()
+    cur = get_cur()
+    cur.execute(
+        "UPDATE posts SET views = %s WHERE id = %s;", (post["views"] + 1, id),
+    )
+    conn.commit()
+
     return render_template("blog/detail.html", post=post, body=body, tags=tags)
 
 
