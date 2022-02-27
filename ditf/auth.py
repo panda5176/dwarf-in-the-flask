@@ -22,26 +22,37 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        mail = request.form["mail"]
         error = None
 
         if not username:
             error = "Username is required."
         elif not password:
             error = "Password is required."
+        elif not mail:
+            error = "Mail address is required."
 
         if error is None:
-            try:
-                conn = get_conn()
-                cur = get_cur()
-                cur.execute(
-                    "INSERT INTO users (username, password) VALUES (%s, %s);",
-                    (username, generate_password_hash(password)),
-                )
-                conn.commit()
-            except conn.IntegrityError:
+            conn = get_conn()
+            cur = get_cur()
+            cur.execute(
+                "SELECT username FROM users WHERE username = %s;", (username,)
+            )
+            if cur.fetchone():
                 error = f"User {username} is already registered."
             else:
-                return redirect(url_for("auth.login"))
+                cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
+
+                if cur.fetchone():
+                    error = f"Mail {mail} is already registered."
+                else:
+                    cur.execute(
+                        "INSERT INTO users (username, password, mail) "
+                        "VALUES (%s, %s, %s);",
+                        (username, generate_password_hash(password), mail),
+                    )
+                    conn.commit()
+                    return redirect(url_for("auth.login"))
 
         flash(error)
 
