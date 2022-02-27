@@ -33,9 +33,7 @@ CREATE TABLE comments (
 
 CREATE TABLE tags (
   id SERIAL PRIMARY KEY,
-  author_id INTEGER NOT NULL,
-  title TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES users (id)
+  title TEXT NOT NULL
 );
 
 CREATE TABLE post2tag (
@@ -44,3 +42,6 @@ CREATE TABLE post2tag (
   FOREIGN KEY (post_id) REFERENCES posts (id),
   FOREIGN KEY (tag_id) REFERENCES tags (id)
 );
+
+INSERT INTO tags (title) VALUES ('Python');
+INSERT INTO tags (title) VALUES ('Flask');

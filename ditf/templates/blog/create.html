@@ -13,6 +13,16 @@
             placeholder="Title" required>
     </div>
     <div class="my-2">
+        {% for tag in all_tags %}
+        <input type="checkbox" class="btn-check" id="tag-{{ tag['id'] }}"
+            name="tag-{{ tag['id'] }}" autocomplete="on">
+        <label for="tag-{{ tag['id'] }}"
+            class="btn btn-sm btn-outline-secondary">
+            {{ tag['title'] }}
+        </label>
+        {% endfor %}
+    </div>
+    <div class="my-2">
         <textarea name="body"
             id="mdeditor">{{ request.form['body'] }}</textarea>
     </div>

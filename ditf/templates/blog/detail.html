@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+{% for tag in tags %}
+<a class="btn btn-sm btn-secondary" href="#">
+    {{ tag['title'] }}
+</a>
+{% endfor %}
 {% if g.user['id'] == post['author_id'] %}
 <div class="d-flex flex-nowrap">
     <a class="btn btn-sm btn-outline-secondary"

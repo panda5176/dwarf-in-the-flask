@@ -20,6 +20,21 @@
             required placeholder="Title">
     </div>
     <div class="my-2">
+        {% for tag in all_tags %}
+        {% if tag['id'] in tag_ids %}
+        <input type="checkbox" class="btn-check" id="tag-{{ tag['id'] }}"
+            name="tag-{{ tag['id'] }}" checked autocomplete="on">
+        {% else %}
+        <input type="checkbox" class="btn-check" id="tag-{{ tag['id'] }}"
+            name="tag-{{ tag['id'] }}" autocomplete="on">
+        {% endif %}
+        <label for="tag-{{ tag['id'] }}"
+            class="btn btn-sm btn-outline-secondary">
+            {{ tag['title'] }}
+        </label>
+        {% endfor %}
+    </div>
+    <div class="my-2">
         <textarea name="body" id="mdeditor">
             {{ request.form['body'] or post['body'] }}
         </textarea>
