@@ -17,21 +17,40 @@ from .db import get_conn, get_cur
 bp = Blueprint("blog", __name__)
 
 
-@bp.route("/")
+def get_all_tags():
+    cur = get_cur()
+    cur.execute("SELECT * FROM tags;")
+    tags = cur.fetchall()
+    return tags
+
+
+@bp.route("/", methods=("GET",))
 def index():
     per_page = 5
     page, _, offset = get_page_args(per_page=per_page)
+    tag_id = request.args.get("tag_id", 0)
 
     cur = get_cur()
     cur.execute("SELECT COUNT(*) FROM posts;")
     total = cur.fetchone()[0]
-    cur.execute(
-        "SELECT p.id, title, body, created, author_id, views, username "
-        "FROM posts p JOIN users u ON p.author_id = u.id "
-        "ORDER BY created DESC LIMIT %s OFFSET %s;",
-        (per_page, offset),
-    )
+    if tag_id:
+        cur.execute(
+            "SELECT p.id, title, body, created, author_id, views, username "
+            "FROM posts p JOIN users u ON p.author_id = u.id "
+            "JOIN post2tag pt ON p.id = pt.post_id WHERE pt.tag_id = %s "
+            "ORDER BY created DESC LIMIT %s OFFSET %s;",
+            (tag_id, per_page, offset),
+        )
+    else:
+        cur.execute(
+            "SELECT p.id, title, body, created, author_id, views, username "
+            "FROM posts p JOIN users u ON p.author_id = u.id "
+            "ORDER BY created DESC LIMIT %s OFFSET %s;",
+            (per_page, offset),
+        )
     posts = cur.fetchall()
+
+    all_tags = get_all_tags()
 
     return render_template(
         "blog/index.html",
@@ -39,14 +58,9 @@ def index():
         pagination=Pagination(page=page, total=total, per_page=per_page),
         search=True,
         bs_version=5,
+        all_tags=all_tags,
+        tag_id=int(tag_id),
     )
-
-
-def get_all_tags():
-    cur = get_cur()
-    cur.execute("SELECT * FROM tags;")
-    tags = cur.fetchall()
-    return tags
 
 
 @bp.route("/create", methods=("GET", "POST"))

@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h2 class="fw-bold border-bottom py-1">
-    {% block title %}{{ post['title'] }} - Edit{% endblock %}
-</h2>
+<div class="d-flex flex-nowrap align-items-center border-bottom py-1">
+    <h2 class="my-0 fw-bold">
+        {% block title %}{{ post['title'] }} - Edit{% endblock %}
+    </h2>
+    <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+        <input type="submit" value="Delete"
+            onclick="return confirm('Are you sure?');"
+            class="btn btn-sm btn-danger mx-2">
+    </form>
+</div>
 {% endblock %}
 
 {% block content %}
-<form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
-    <div>
-        <input type="submit" value="Delete"
-            onclick="return confirm('Are you sure?');"
-            class="btn btn-sm btn-danger">
-    </div>
-</form>
 <form method="post">
     <div class="my-2">
         <input name="title" value="{{ request.form['title'] or post['title'] }}"

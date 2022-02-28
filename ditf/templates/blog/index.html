@@ -15,6 +15,18 @@
 {% endblock %}
 
 {% block content %}
+{% for tag in all_tags %}
+{% if tag_id == tag['id'] %}
+<a class="btn btn-sm btn-secondary" href="{{ url_for('blog.index') }}">
+    {{ tag['title'] }}
+</a>
+{% else %}
+<a class="btn btn-sm btn-outline-secondary"
+    href="{{ url_for('blog.index', tag_id=tag['id']) }}">
+    {{ tag['title'] }}
+</a>
+{% endif %}
+{% endfor %}
 {% for post in posts %}
 <article class="my-3">
     <div class="d-flex flex-nowrap align-items-center py-2">
