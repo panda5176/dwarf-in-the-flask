@@ -3,7 +3,7 @@
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
     <h2 class="my-0 fw-bold">
-        {% block title %}{{ post['title'] }} - Edit{% endblock %}
+        {% block title %}{{ post['title'] }} - edit{% endblock %}
     </h2>
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
         <input type="submit" value="Delete"

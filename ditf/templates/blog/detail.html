@@ -3,7 +3,9 @@
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
     <h2 class="my-0 fw-bold">
-        {% block title %}{{ post['title'] }}{% endblock %}
+        <a href="#" class="ditf-link">
+            {% block title %}{{ post['title'] }}{% endblock %}
+        </a>
     </h2>
     {% if g.user['id'] == post['author_id'] %}
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
@@ -15,22 +17,24 @@
         href="{{ url_for('blog.update', id=post['id']) }}">
         Edit
     </a>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}
 
 {% block content %}
-<p class="fst-italic">
-    {{ post['views'] }} views, by {{ post['username'] }} on {{
-    post['created'].strftime('%Y-%m-%d') }}
+<p class="fst-italic my-1 mx-1">
+    by {{ post['username'] }} on {{ post['created'].strftime('%Y/%m/%d') }},
+    {{ post['views'] }} views
 </p>
-{% for tag in tags %}
-<a class="btn btn-sm btn-secondary"
-    href="{{ url_for('blog.index', tag_id=tag['id']) }}">
-    {{ tag['title'] }}
-</a>
-{% endfor %}
-<article class=" my-3">
+<div class="d-flex flex-wrap align-items-center py-2">
+    {% for tag in tags %}
+    <a class="btn btn-sm btn-secondary mx-1"
+        href="{{ url_for('blog.index', tag_id=tag['id']) }}">
+        {{ tag['title'] }}
+    </a>
+    {% endfor %}
+</div>
+<article class="my-3">
     {{ body | safe }}
 </article>
 {% endblock %}
