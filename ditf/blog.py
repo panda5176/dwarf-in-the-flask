@@ -55,7 +55,15 @@ def index():
     return render_template(
         "blog/index.html",
         posts=posts,
-        pagination=Pagination(page=page, total=total, per_page=per_page),
+        pagination=Pagination(
+            page=page,
+            total=total,
+            per_page=per_page,
+            prev_label="<<",
+            next_label=">>",
+            format_total=True,
+            format_number=True,
+        ),
         search=True,
         bs_version=5,
         all_tags=all_tags,

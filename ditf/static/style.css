@@ -14,3 +14,21 @@ code, code span {
 .ditf-link:hover {
   color: #6c757d;
 }
+
+.pagination a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-item .page-link:hover {
+  color: #6c757d;
+}
+
+.page-item.active .page-link {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.page-item.active .page-link:hover {
+  color: white;
+}

@@ -1,4 +1,4 @@
-import functools
+import functools, re
 
 from flask import (
     Blueprint,
@@ -33,6 +33,10 @@ def register():
             error = "Password is required."
         elif not mail:
             error = "Mail address is required."
+        elif re.match("[^\w]", username):
+            error = "Username with only alphabets, numbers and underscores."
+        elif re.match("[^\w]", password):
+            error = "Password with only alphabets, numbers and underscores."
 
         if error:
             flash(error, "warning")
@@ -69,22 +73,30 @@ def login():
         password = request.form["password"]
         error = None
 
-        cur = get_cur()
-        cur.execute("SELECT * FROM users WHERE username = %s;", (username,))
-        user = cur.fetchone()
-
-        if user is None:
-            error = "Incorrect username."
-        elif not check_password_hash(user["password"], password):
-            error = "Incorrect password."
+        if re.match("[^\w]", username):
+            error = "Username with only alphabets, numbers and underscores."
+        elif re.match("[^\w]", password):
+            error = "Password with only alphabets, numbers and underscores."
 
         if error:
             flash(error, "warning")
         else:
-            session.clear()
-            session["user_id"] = user["id"]
-            flash("Successfully logged in.", "info")
-            return redirect(url_for("index"))
+            cur = get_cur()
+            cur.execute("SELECT * FROM users WHERE username = %s;", (username,))
+            user = cur.fetchone()
+
+            if user is None:
+                error = "Incorrect username."
+            elif not check_password_hash(user["password"], password):
+                error = "Incorrect password."
+
+            if error:
+                flash(error, "warning")
+            else:
+                session.clear()
+                session["user_id"] = user["id"]
+                flash("Successfully logged in.", "info")
+                return redirect(url_for("index"))
 
     return render_template("auth/login.html")
 
@@ -147,7 +159,15 @@ def userinfo(id):
         user=user,
         about=about,
         posts=posts,
-        pagination=Pagination(page=page, total=total, per_page=per_page),
+        pagination=Pagination(
+            page=page,
+            total=total,
+            per_page=per_page,
+            prev_label="<<",
+            next_label=">>",
+            format_total=True,
+            format_number=True,
+        ),
         search=True,
         bs_version=5,
     )
@@ -173,6 +193,10 @@ def update(id):
             error = "Username is required."
         elif not mail:
             error = "Mail address is required."
+        elif re.match("[^\w]", username):
+            error = "Username with only alphabets, numbers and underscores."
+        elif re.match("[^\w]", password):
+            error = "Password with only alphabets, numbers and underscores."
 
         if error:
             flash(error, "warning")
