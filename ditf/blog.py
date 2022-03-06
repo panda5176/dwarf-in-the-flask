@@ -74,6 +74,10 @@ def index():
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
+    if g.user["id"] != 1:
+        flash("Invalid access.", "warning")
+        return redirect(url_for("blog.index"))
+
     all_tags = get_all_tags()
 
     if request.method == "POST":
@@ -173,6 +177,10 @@ def detail(id):
 @login_required
 def update(id):
     post = get_post(id)
+    if post["author_id"] != g.user["id"]:
+        flash("Invalid access.", "warning")
+        return redirect(url_for("blog.detail", id=id))
+
     tag_ids = [
         get_tag(tag_id[0])["id"] for tag_id in get_tag_ids_from_post_id(id)
     ]
@@ -214,7 +222,7 @@ def update(id):
 
             conn.commit()
             flash("The post was successfully edited.", "info")
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("blog.detail", id=id))
 
     return render_template(
         "blog/update.html", post=post, tag_ids=tag_ids, all_tags=all_tags
@@ -224,7 +232,11 @@ def update(id):
 @bp.route("/<int:id>/delete", methods=("POST",))
 @login_required
 def delete(id):
-    get_post(id)
+    post = get_post(id)
+    if post["author_id"] != g.user["id"]:
+        flash("Invalid access.", "warning")
+        return redirect(url_for("blog.detail", id=id))
+
     conn = get_conn()
     cur = get_cur()
     cur.execute("DELETE FROM post2tag WHERE post_id = %s;", (id,))

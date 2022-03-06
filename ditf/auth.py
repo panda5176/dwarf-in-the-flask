@@ -19,6 +19,17 @@ from .db import get_conn, get_cur
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
@@ -47,12 +58,12 @@ def register():
                 "SELECT username FROM users WHERE username = %s;", (username,)
             )
             if cur.fetchone():
-                error = f"User {username} is already registered."
+                flash(f"User {username} is already registered.", "warning")
             else:
                 cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
 
                 if cur.fetchone():
-                    error = f"Mail {mail} is already registered."
+                    flash(f"Mail {mail} is already registered.", "warning")
                 else:
                     cur.execute(
                         "INSERT INTO users (username, password, mail) "
@@ -120,17 +131,6 @@ def logout():
     return redirect(url_for("index"))
 
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        return view(**kwargs)
-
-    return wrapped_view
-
-
 @bp.route("/<int:id>", methods=("GET",))
 def userinfo(id):
     cur = get_cur()
@@ -181,6 +181,9 @@ def update(id):
         (id,),
     )
     user = cur.fetchone()
+    if user["id"] != g.user["id"]:
+        flash("Invalid access.", "warning")
+        return redirect(url_for("auth.userinfo", id=id))
 
     if request.method == "POST":
         username = request.form["username"]
@@ -207,13 +210,13 @@ def update(id):
             )
             new_user = cur.fetchone()
             if new_user and new_user[0] != user["username"]:
-                error = f"User {username} is already registered."
+                flash(f"User {username} is already registered.", "warning")
             else:
                 cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
                 new_mail = cur.fetchone()
 
                 if new_mail and new_mail[0] != user["mail"]:
-                    error = f"Mail {mail} is already registered."
+                    flash(f"Mail {mail} is already registered.", "warning")
                 else:
                     if password:
                         cur.execute(

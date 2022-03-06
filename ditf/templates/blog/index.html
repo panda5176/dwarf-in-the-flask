@@ -7,7 +7,7 @@
             {% block title %}Posts{% endblock %}
         </a>
     </h2>
-    {% if g.user %}
+    {% if g.user['id'] == 1 %}
     <a class="btn btn-sm btn-outline-secondary mx-2"
         href="{{ url_for('blog.create') }}">
         New
