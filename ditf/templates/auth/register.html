@@ -2,7 +2,9 @@
 
 {% block header %}
 <h2 class="fw-bold border-bottom py-1">
-    {% block title %}Register{% endblock %}
+    <a href="#" class="ditf-link">
+        {% block title %}Register{% endblock %}
+    </a>
 </h2>
 {% endblock %}
 
@@ -10,22 +12,16 @@
 <form method="post">
     <div class="col-sm-8 col-md-8 col-lg-6 mx-auto">
         <div class="my-2 py-2">
-            <label for="username" class="form-label">
-                Username
-            </label>
+            <label for="username" class="form-label">Username</label>
             <input name="username" id="username" required class="form-control">
         </div>
         <div class="my-2 py-2">
-            <label for="mail" class="form-label">
-                Mail
-            </label>
+            <label for="mail" class="form-label">Mail</label>
             <input name="mail" id="mail" type="email" required
                 class="form-control">
         </div>
         <div class="my-2 py-2">
-            <label for="password" class="form-label">
-                Password
-            </label>
+            <label for="password" class="form-label">Password</label>
             <input type="password" name="password" id="password" required
                 class="form-control">
         </div>

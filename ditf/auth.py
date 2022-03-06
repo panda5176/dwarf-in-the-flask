@@ -10,6 +10,8 @@ from flask import (
     session,
     url_for,
 )
+from flask_paginate import Pagination, get_page_args
+from markdown import markdown
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_conn, get_cur
@@ -32,7 +34,9 @@ def register():
         elif not mail:
             error = "Mail address is required."
 
-        if error is None:
+        if error:
+            flash(error, "warning")
+        else:
             conn = get_conn()
             cur = get_cur()
             cur.execute(
@@ -52,9 +56,8 @@ def register():
                         (username, generate_password_hash(password), mail),
                     )
                     conn.commit()
+                    flash("Successfully registered.", "info")
                     return redirect(url_for("auth.login"))
-
-        flash(error)
 
     return render_template("auth/register.html")
 
@@ -75,12 +78,13 @@ def login():
         elif not check_password_hash(user["password"], password):
             error = "Incorrect password."
 
-        if error is None:
+        if error:
+            flash(error, "warning")
+        else:
             session.clear()
             session["user_id"] = user["id"]
+            flash("Successfully logged in.", "info")
             return redirect(url_for("index"))
-
-        flash(error)
 
     return render_template("auth/login.html")
 
@@ -100,6 +104,7 @@ def load_logged_in_user():
 @bp.route("/logout")
 def logout():
     session.clear()
+    flash("Successfully logged out.", "info")
     return redirect(url_for("index"))
 
 
@@ -112,3 +117,101 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+
+@bp.route("/<int:id>", methods=("GET",))
+def userinfo(id):
+    cur = get_cur()
+    cur.execute("SELECT id, username, about FROM users WHERE id = %s;", (id,))
+    user = cur.fetchone()
+    about = markdown(
+        user["about"], extensions=["nl2br", "tables", "fenced_code"]
+    )
+
+    per_page = 5
+    page, _, offset = get_page_args(per_page=per_page)
+
+    cur.execute("SELECT COUNT(*) FROM posts WHERE author_id = %s;", (id,))
+    total = cur.fetchone()[0]
+
+    cur.execute(
+        "SELECT id, title, body, created, author_id, views "
+        "FROM posts WHERE author_id = %s ORDER BY created DESC "
+        "LIMIT %s OFFSET %s;",
+        (id, per_page, offset),
+    )
+    posts = cur.fetchall()
+
+    return render_template(
+        "auth/userinfo.html",
+        user=user,
+        about=about,
+        posts=posts,
+        pagination=Pagination(page=page, total=total, per_page=per_page),
+        search=True,
+        bs_version=5,
+    )
+
+
+@bp.route("/<int:id>/update", methods=("GET", "POST"))
+def update(id):
+    cur = get_cur()
+    cur.execute(
+        "SELECT id, username, mail, about, password FROM users WHERE id = %s;",
+        (id,),
+    )
+    user = cur.fetchone()
+
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        mail = request.form["mail"]
+        about = request.form["about"].strip()
+        error = None
+
+        if not username:
+            error = "Username is required."
+        elif not mail:
+            error = "Mail address is required."
+
+        if error:
+            flash(error, "warning")
+        else:
+            conn = get_conn()
+            cur.execute(
+                "SELECT username FROM users WHERE username = %s;", (username,)
+            )
+            new_user = cur.fetchone()
+            if new_user and new_user[0] != user["username"]:
+                error = f"User {username} is already registered."
+            else:
+                cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
+                new_mail = cur.fetchone()
+
+                if new_mail and new_mail[0] != user["mail"]:
+                    error = f"Mail {mail} is already registered."
+                else:
+                    if password:
+                        cur.execute(
+                            "UPDATE users SET username = %s, password = %s, "
+                            "mail = %s, about = %s WHERE id = %s;",
+                            (
+                                username,
+                                generate_password_hash(password),
+                                mail,
+                                about,
+                                id,
+                            ),
+                        )
+                    else:
+                        cur.execute(
+                            "UPDATE users SET username = %s, password = %s, "
+                            "mail = %s, about = %s WHERE id = %s;",
+                            (username, user["password"], mail, about, id,),
+                        )
+                    conn.commit()
+                    flash("The user information successfully edited.", "info")
+                    return redirect(url_for("auth.userinfo", id=id))
+
+    return render_template("auth/update.html", user=user)
+

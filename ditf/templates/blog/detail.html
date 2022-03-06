@@ -23,8 +23,12 @@
 
 {% block content %}
 <p class="fst-italic my-1 mx-1">
-    by {{ post['username'] }} on {{ post['created'].strftime('%Y/%m/%d') }},
-    {{ post['views'] }} views
+    by
+    <a class="ditf-link fw-bold"
+        href="{{ url_for('auth.userinfo', id=post['author_id']) }}">
+        {{ post['username'] }}
+    </a>
+    on {{ post['created'].strftime('%Y/%m/%d') }}, {{ post['views'] }} views
 </p>
 <div class="d-flex flex-wrap align-items-center py-2">
     {% for tag in tags %}

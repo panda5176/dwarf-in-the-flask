@@ -50,10 +50,11 @@
                 </div>
                 <div class="col-3 text-end">
                     {% if g.user %}
-                    <span class="btn btn-sm btn-outline-secondary my-1">
-                        {{ g.user['username'] }}
-                    </span>
                     <a class="btn btn-sm btn-outline-secondary my-1"
+                        href="{{ url_for('auth.userinfo', id=g.user['id']) }}">
+                        {{ g.user['username'] }}
+                    </a>
+                    <a class=" btn btn-sm btn-outline-secondary my-1"
                         href="{{ url_for('auth.logout') }}">
                         Log Out
                     </a>
@@ -74,8 +75,14 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     {% block header %}{% endblock %}
-                    {% for message in get_flashed_messages() %}
-                    <div class="flash">{{ message }}</div>
+                    {% for category, message in get_flashed_messages(
+                    with_categories=true
+                    ) %}
+                    {% if category == 'warning' %}
+                    <div class="alert alert-warning my-2">{{ message }}</div>
+                    {% else %}
+                    <div class="alert alert-success my-2">{{ message }}</div>
+                    {% endif %}
                     {% endfor %}
                     {% block content %}{% endblock %}
                 </div>

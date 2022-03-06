@@ -3,7 +3,9 @@
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
     <h2 class="my-0 fw-bold">
-        {% block title %}Posts{% endblock %}
+        <a href="#" class="ditf-link">
+            {% block title %}Posts{% endblock %}
+        </a>
     </h2>
     {% if g.user %}
     <a class="btn btn-sm btn-outline-secondary mx-2"
@@ -31,7 +33,7 @@
 </div>
 {% for post in posts %}
 <article class="my-2">
-    <div class="d-flex flex-nowrap align-items-end my-1">
+    <div class="d-flex flex-nowrap align-items-end">
         <h3 class="my-0">
             <a href="{{ url_for('blog.detail', id=post['id'])}}"
                 class="ditf-link">
@@ -40,9 +42,12 @@
         </h3>
     </div>
     <p class="fst-italic">
-        by {{ post['username'] }} on {{ post['created'].strftime('%Y/%m/%d')
-        }},
-        {{ post['views'] }} views
+        by
+        <a class="ditf-link fw-bold"
+            href="{{ url_for('auth.userinfo', id=post['author_id']) }}">
+            {{ post['username'] }}
+        </a>
+        on {{ post['created'].strftime('%Y/%m/%d') }}, {{ post['views'] }} views
     </p>
 </article>
 {% if not loop.last %}
@@ -50,6 +55,6 @@
 {% endif %}
 {% endfor %}
 <div class="d-flex justify-content-center">
-    {{ pagination.links|safe }}
+    {{ pagination.links | safe }}
 </div>
 {% endblock %}

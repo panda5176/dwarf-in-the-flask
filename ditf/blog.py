@@ -76,8 +76,8 @@ def create():
         if not title:
             error = "Title is required."
 
-        if error is not None:
-            flash(error)
+        if error:
+            flash(error, "warning")
         else:
             conn = get_conn()
             cur = get_cur()
@@ -99,7 +99,8 @@ def create():
                     )
 
             conn.commit()
-            return redirect(url_for("blog.index"))
+            flash("The post was successfully created.", "info")
+            return redirect(url_for("blog.detail", id=post_id))
 
     return render_template("blog/create.html", all_tags=all_tags)
 
@@ -177,8 +178,8 @@ def update(id):
         if not title:
             error = "Title is required."
 
-        if error is not None:
-            flash(error)
+        if error:
+            flash(error, "warning")
         else:
             conn = get_conn()
             cur = get_cur()
@@ -204,6 +205,7 @@ def update(id):
                     )
 
             conn.commit()
+            flash("The post was successfully edited.", "info")
             return redirect(url_for("blog.index"))
 
     return render_template(
@@ -220,4 +222,5 @@ def delete(id):
     cur.execute("DELETE FROM post2tag WHERE post_id = %s;", (id,))
     cur.execute("DELETE FROM posts WHERE id = %s;", (id,))
     conn.commit()
+    flash("The post was successfully deleted.", "info")
     return redirect(url_for("blog.index"))

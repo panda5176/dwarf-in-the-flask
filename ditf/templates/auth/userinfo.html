@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<div class="d-flex flex-nowrap align-items-center border-bottom py-1">
+    <h2 class="my-0 fw-bold">
+        <a href="#" class="ditf-link">
+            {% block title %}{{ user['username'] }}{% endblock %}
+        </a>
+    </h2>
+    {% if g.user['id'] == user['id'] %}
+    <a class="btn btn-sm btn-outline-secondary mx-2"
+        href="{{ url_for('auth.update', id=user['id']) }}">
+        Edit
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-nowrap align-items-center my-3 py-1 border-bottom">
+    <h4 class="my-0 fw-bold">About</h4>
+</div>
+<p class="my-2">{{ about | safe }}</p>
+<h4 class="my-0 fw-bold my-3 py-1 border-bottom">Posts</h4>
+{% for post in posts %}
+<article class="my-1">
+    <div class="d-flex flex-nowrap align-items-end">
+        <h4 class="my-0">
+            <a href="{{ url_for('blog.detail', id=post['id'])}}"
+                class="ditf-link">
+                {{ post['title'] }}
+            </a>
+        </h4>
+        <p class="fst-italic mx-1 my-0">
+            on {{ post['created'].strftime('%Y/%m/%d') }},
+            {{ post['views'] }} views
+        </p>
+    </div>
+</article>
+{% if not loop.last %}
+<hr>
+{% endif %}
+{% endfor %}
+<div class="d-flex justify-content-center">
+    {{ pagination.links | safe }}
+</div>
+{% endblock %}
