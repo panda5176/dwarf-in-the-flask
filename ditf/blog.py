@@ -35,7 +35,8 @@ def index():
     total = cur.fetchone()[0]
     if tag_id:
         cur.execute(
-            "SELECT p.id, title, body, created, author_id, views, username "
+            "SELECT p.id, title, body, created, modified, author_id, views, "
+            "username "
             "FROM posts p JOIN users u ON p.author_id = u.id "
             "JOIN post2tag pt ON p.id = pt.post_id WHERE pt.tag_id = %s "
             "ORDER BY created DESC LIMIT %s OFFSET %s;",
@@ -43,7 +44,8 @@ def index():
         )
     else:
         cur.execute(
-            "SELECT p.id, title, body, created, author_id, views, username "
+            "SELECT p.id, title, body, created, modified, author_id, views, "
+            "username "
             "FROM posts p JOIN users u ON p.author_id = u.id "
             "ORDER BY created DESC LIMIT %s OFFSET %s;",
             (per_page, offset),
@@ -117,7 +119,8 @@ def create():
 def get_post(id):
     cur = get_cur()
     cur.execute(
-        "SELECT p.id, author_id, created, title, body, views, username "
+        "SELECT p.id, author_id, created, modified, title, body, views, "
+        "username "
         "FROM posts p JOIN users u ON p.author_id = u.id "
         "WHERE p.id = %s;",
         (id,),
@@ -145,7 +148,7 @@ def get_tag_ids_from_post_id(post_id):
 
 def get_tag(id):
     cur = get_cur()
-    cur.execute("SELECT * FROM tags WHERE id = %s;", (id,))
+    cur.execute("SELECT id, title FROM tags WHERE id = %s;", (id,))
     tag = cur.fetchone()
 
     if tag is None:
@@ -197,7 +200,9 @@ def update(id):
             conn = get_conn()
             cur = get_cur()
             cur.execute(
-                "UPDATE posts SET title = %s, body = %s WHERE id = %s;",
+                "UPDATE posts SET title = %s, body = %s, "
+                "modified = CURRENT_TIMESTAMP "
+                "WHERE id = %s;",
                 (title, body, id),
             )
 

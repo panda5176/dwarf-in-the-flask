@@ -105,7 +105,11 @@ def login():
             flash(error, "warning")
         else:
             cur = get_cur()
-            cur.execute("SELECT * FROM users WHERE username = %s;", (username,))
+            cur.execute(
+                "SELECT id, username, mail, about "
+                "FROM users WHERE username = %s;",
+                (username,),
+            )
             user = cur.fetchone()
 
             if user is None:
@@ -132,7 +136,10 @@ def load_logged_in_user():
         g.user = None
     else:
         cur = get_cur()
-        cur.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
+        cur.execute(
+            "SELECT id, username, mail, about FROM users WHERE id = %s;",
+            (user_id,),
+        )
         g.user = cur.fetchone()
 
 
@@ -159,7 +166,7 @@ def userinfo(id):
     total = cur.fetchone()[0]
 
     cur.execute(
-        "SELECT id, title, body, created, author_id, views "
+        "SELECT id, title, body, created, modified, author_id, views "
         "FROM posts WHERE author_id = %s ORDER BY created DESC "
         "LIMIT %s OFFSET %s;",
         (id, per_page, offset),
