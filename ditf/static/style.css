@@ -4,6 +4,10 @@
 
 code, code span {
   font-family: 'Nanum Gothic Coding', monospace;
+  color: #adbac7;
+  background: #22272e;
+  padding: 0.3em;
+  border-radius: 0.3em;
 }
 
 .ditf-link {
@@ -12,6 +16,14 @@ code, code span {
 }
 
 .ditf-link:hover {
+  color: #6c757d;
+}
+
+article a {
+  color: inherit;
+}
+
+article a:hover {
   color: #6c757d;
 }
 
