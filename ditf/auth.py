@@ -30,6 +30,18 @@ def login_required(view):
     return wrapped_view
 
 
+def admin_only(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user["id"] != 1:
+            flash("Invalid access.", "warning")
+            return redirect(url_for("blog.index"))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":

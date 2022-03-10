@@ -11,7 +11,7 @@ from flask_paginate import Pagination, get_page_args
 from markdown import markdown
 from werkzeug.exceptions import abort
 
-from .auth import login_required
+from .auth import admin_only, login_required
 from .db import get_conn, get_cur
 
 bp = Blueprint("blog", __name__)
@@ -72,12 +72,9 @@ def index():
 
 
 @bp.route("/create", methods=("GET", "POST"))
+@admin_only
 @login_required
 def create():
-    if g.user["id"] != 1:
-        flash("Invalid access.", "warning")
-        return redirect(url_for("blog.index"))
-
     all_tags = get_all_tags()
 
     if request.method == "POST":
