@@ -106,7 +106,7 @@ def login():
         else:
             cur = get_cur()
             cur.execute(
-                "SELECT id, username, mail, about "
+                "SELECT id, username, password, mail, about "
                 "FROM users WHERE username = %s;",
                 (username,),
             )
