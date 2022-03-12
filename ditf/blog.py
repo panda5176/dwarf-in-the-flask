@@ -136,36 +136,25 @@ def get_post(id):
     return post
 
 
-def get_tag_ids_from_post_id(post_id):
+def get_tags_from_post_id(post_id):
     cur = get_cur()
     cur.execute(
-        "SELECT tag_id FROM post2tag WHERE post_id = %s;", (post_id,),
+        "SELECT t.id, title FROM post2tag pt JOIN tags t ON pt.tag_id = t.id "
+        "WHERE post_id = %s ORDER BY title;",
+        (post_id,),
     )
-    tag_ids = cur.fetchall()
+    tags = cur.fetchall()
 
-    if tag_ids is None:
+    if tags is None:
         abort(404, f"Post id {post_id} doesn't exist.")
 
-    return tag_ids
-
-
-def get_tag(id):
-    cur = get_cur()
-    cur.execute(
-        "SELECT id, title FROM tags WHERE id = %s ORDER BY title;", (id,)
-    )
-    tag = cur.fetchone()
-
-    if tag is None:
-        abort(404, f"Tag id {id} doesn't exist.")
-
-    return tag
+    return tags
 
 
 @bp.route("/<int:id>", methods=("GET",))
 def detail(id):
     post = get_post(id)
-    tags = [get_tag(tag_id[0]) for tag_id in get_tag_ids_from_post_id(id)]
+    tags = get_tags_from_post_id(id)
     body = markdown(post["body"], extensions=["nl2br", "tables", "fenced_code"])
 
     conn = get_conn()
@@ -186,9 +175,7 @@ def update(id):
         flash("Invalid access.", "warning")
         return redirect(url_for("blog.detail", id=id))
 
-    tag_ids = [
-        get_tag(tag_id[0])["id"] for tag_id in get_tag_ids_from_post_id(id)
-    ]
+    tag_ids = [tag["id"] for tag in get_tags_from_post_id(id)]
     all_tags = get_all_tags()
 
     if request.method == "POST":
