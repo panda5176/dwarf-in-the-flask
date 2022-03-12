@@ -7,9 +7,10 @@ code, pre code, pre code span {
   font-size: 0.9em;
 }
 
-code {
+p code {
   color: #adbac7;
   background: #22272e;
+  font-size: 0.8em;
   padding: 0.3em;
   border-radius: 0.3em;
 }
