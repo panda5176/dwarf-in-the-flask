@@ -87,6 +87,9 @@ def create():
         if not title:
             error = "Title is required."
 
+        title = title.replace("<", "&lt;").replace(">", "&gt;")
+        body = body.replace("<", "&lt;").replace(">", "&gt;")
+
         if error:
             flash(error, "warning")
         else:
@@ -193,6 +196,9 @@ def update(id):
 
         if not title:
             error = "Title is required."
+
+        title = title.replace("<", "&lt;").replace(">", "&gt;")
+        body = body.replace("<", "&lt;").replace(">", "&gt;")
 
         if error:
             flash(error, "warning")
