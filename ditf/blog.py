@@ -139,8 +139,7 @@ def get_post(id):
 def get_tag_ids_from_post_id(post_id):
     cur = get_cur()
     cur.execute(
-        "SELECT tag_id FROM post2tag WHERE post_id = %s ORDER BY title;",
-        (post_id,),
+        "SELECT tag_id FROM post2tag WHERE post_id = %s;", (post_id,),
     )
     tag_ids = cur.fetchall()
 
@@ -152,7 +151,9 @@ def get_tag_ids_from_post_id(post_id):
 
 def get_tag(id):
     cur = get_cur()
-    cur.execute("SELECT id, title FROM tags WHERE id = %s;", (id,))
+    cur.execute(
+        "SELECT id, title FROM tags WHERE id = %s ORDER BY title;", (id,)
+    )
     tag = cur.fetchone()
 
     if tag is None:
