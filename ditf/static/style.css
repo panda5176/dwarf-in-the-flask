@@ -13,6 +13,7 @@ pre code {
 
 p code, li code {
   color: #f47067;
+  margin: 0.2rem;
 }
 
 .ditf-link {
