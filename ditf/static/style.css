@@ -7,6 +7,10 @@ code, pre code, pre code span {
   font-size: 0.8rem;
 }
 
+pre code {
+  border-radius: 0.3rem;
+}
+
 p code, li code {
   color: #adbac7;
   background: #22272e;
