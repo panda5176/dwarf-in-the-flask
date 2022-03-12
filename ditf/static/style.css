@@ -7,11 +7,12 @@ code, pre code, pre code span {
   font-size: 0.9em;
 }
 
-p code {
+p code, li code {
   color: #adbac7;
   background: #22272e;
   font-size: 0.8em;
   padding: 0.3em;
+  margin: 0.2em;
   border-radius: 0.3em;
 }
 
@@ -22,6 +23,10 @@ p code {
 
 .ditf-link:hover {
   color: #6c757d;
+}
+
+article p, article li {
+  margin-bottom: 1rem;
 }
 
 article a {

@@ -220,7 +220,7 @@ def update(id):
         elif re.match("[^\w]", password):
             error = "Password with only alphabets, numbers and underscores."
 
-        about = about.replace("<", "&lt;").replace(">", "&gt;")
+        about = about.replace("<script>", "&lt;script&gt;")
 
         if error:
             flash(error, "warning")

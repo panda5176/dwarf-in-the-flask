@@ -87,8 +87,8 @@ def create():
         if not title:
             error = "Title is required."
 
-        title = title.replace("<", "&lt;").replace(">", "&gt;")
-        body = body.replace("<", "&lt;").replace(">", "&gt;")
+        title = title.replace("<script>", "&lt;script&gt;")
+        body = body.replace("<script>", "&lt;script&gt;")
 
         if error:
             flash(error, "warning")
@@ -197,8 +197,8 @@ def update(id):
         if not title:
             error = "Title is required."
 
-        title = title.replace("<", "&lt;").replace(">", "&gt;")
-        body = body.replace("<", "&lt;").replace(">", "&gt;")
+        title = title.replace("<script>", "&lt;script&gt;")
+        body = body.replace("<script>", "&lt;script&gt;")
 
         if error:
             flash(error, "warning")
