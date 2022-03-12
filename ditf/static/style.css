@@ -2,8 +2,12 @@
   font-family: 'Nanum Myeongjo', serif;
 }
 
-code, code span {
+code, pre code, pre code span {
   font-family: 'Nanum Gothic Coding', monospace;
+  font-size: 0.9em;
+}
+
+code {
   color: #adbac7;
   background: #22272e;
   padding: 0.3em;
