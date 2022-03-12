@@ -19,14 +19,14 @@ bp = Blueprint("blog", __name__)
 
 def get_all_tags():
     cur = get_cur()
-    cur.execute("SELECT * FROM tags;")
+    cur.execute("SELECT * FROM tags ORDER BY title;")
     tags = cur.fetchall()
     return tags
 
 
 @bp.route("/", methods=("GET",))
 def index():
-    per_page = 5
+    per_page = 10
     page, _, offset = get_page_args(per_page=per_page)
     tag_id = request.args.get("tag_id", 0)
 
