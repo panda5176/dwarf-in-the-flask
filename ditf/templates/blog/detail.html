@@ -28,7 +28,9 @@
         href="{{ url_for('auth.userinfo', id=post['author_id']) }}">
         {{ post['username'] }}
     </a>
-    on {{ post['created'].strftime('%Y/%m/%d') }}, {{ post['views'] }} views
+    on {{ post['created'].strftime('%Y/%m/%d') }},
+    modified on {{ post['modified'].strftime('%Y/%m/%d') }},
+    {{ post['views'] }} views
 </p>
 <div class="d-flex flex-wrap align-items-center py-2">
     {% for tag in tags %}
@@ -41,4 +43,52 @@
 <article class="my-3">
     {{ body | safe }}
 </article>
+<hr>
+{% for comment in comments %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex flex-nowrap align-items-center border-bottom 
+            mx-1 py-1">
+            <p class="fst-italic my-0">by</p>
+            <a href="{{ url_for('auth.userinfo', id=comment['author_id']) }}"
+                class="ditf-link fw-bold fst-italic mx-1">
+                {{ comment['author_id'] }}
+            </a>
+            <p class="fst-italic my-0">
+                on {{ comment['created'].strftime('%Y/%m/%d, %H:%M') }},
+                modified on
+                {{ comment['modified'].strftime('%Y/%m/%d, %H:%M') }}
+            </p>
+            {% if g.user['id'] == post['author_id'] %}
+            <form action="{{ url_for(
+                'blog.delete_comment', id=comment['id'], post_id=post['id']
+                ) }}" method="post">
+                <input type="submit" value="Delete"
+                    onclick="return confirm('Are you sure?');"
+                    class="btn btn-sm btn-danger mx-2">
+            </form>
+            {% endif %}
+        </div>
+        <div class="mx-1 my-3">
+            {{ comment['body'] }}
+        </div>
+    </div>
+</div>
+{% endfor %}
+<form method="post"
+    action=" {{ url_for('blog.create_comment', post_id=post['id']) }}">
+    <div class="card">
+        <div class="card-body">
+            <div class="row px-2">
+                <div class="col-10 col-lg-11 ps-0">
+                    <textarea name="body" type="text" class="form-control"
+                        placeholder="New comment"
+                        rows="3">{{ request.form['body'] }}</textarea>
+                </div>
+                <input type="submit" value="Save"
+                    class="btn btn-sm btn-outline-secondary col-2 col-lg-1">
+            </div>
+        </div>
+    </div>
+</form>
 {% endblock %}

@@ -208,7 +208,7 @@ def update(id):
         username = request.form["username"]
         password = request.form["password"]
         mail = request.form["mail"]
-        about = request.form["about"].strip()
+        about = request.form["about"]
         error = None
 
         if not username:

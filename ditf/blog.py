@@ -151,10 +151,26 @@ def get_tags_from_post_id(post_id):
     return tags
 
 
+def get_comments_from_post_id(post_id):
+    cur = get_cur()
+    cur.execute(
+        "SELECT id, author_id, created, modified, body "
+        "FROM comments WHERE post_id = %s ORDER BY created;",
+        (post_id,),
+    )
+    comments = cur.fetchall()
+
+    if comments is None:
+        abort(404, f"Post id {post_id} doesn't exist.")
+
+    return comments
+
+
 @bp.route("/<int:id>", methods=("GET",))
 def detail(id):
     post = get_post(id)
     tags = get_tags_from_post_id(id)
+    comments = get_comments_from_post_id(id)
     body = markdown(post["body"], extensions=["nl2br", "tables", "fenced_code"])
 
     conn = get_conn()
@@ -164,7 +180,9 @@ def detail(id):
     )
     conn.commit()
 
-    return render_template("blog/detail.html", post=post, body=body, tags=tags)
+    return render_template(
+        "blog/detail.html", post=post, body=body, tags=tags, comments=comments
+    )
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
@@ -180,7 +198,7 @@ def update(id):
 
     if request.method == "POST":
         title = request.form["title"]
-        body = request.form["body"].strip()
+        body = request.form["body"]
         error = None
 
         if not title:
@@ -241,3 +259,61 @@ def delete(id):
     conn.commit()
     flash("The post was successfully deleted.", "info")
     return redirect(url_for("blog.index"))
+
+
+@bp.route("/<int:post_id>/create_comment", methods=("POST",))
+@login_required
+def create_comment(post_id):
+    body = request.form["body"]
+    error = None
+
+    if not body:
+        error = "Body is required."
+
+    body = body.replace("<script>", "&lt;script&gt;")
+
+    if error:
+        flash(error, "warning")
+    else:
+        conn = get_conn()
+        cur = get_cur()
+        cur.execute(
+            "INSERT INTO comments (post_id, author_id, body)"
+            " VALUES (%s, %s, %s);",
+            (post_id, g.user["id"], body),
+        )
+        conn.commit()
+        flash("The comment was successfully created.", "info")
+
+    return redirect(url_for("blog.detail", id=post_id))
+
+
+def get_comment(id):
+    cur = get_cur()
+    cur.execute(
+        "SELECT id, author_id, post_id, created, modified, body "
+        "FROM comments WHERE id = %s;",
+        (id,),
+    )
+    comment = cur.fetchone()
+
+    if comment is None:
+        abort(404, f"Comment id {id} doesn't exist.")
+
+    return comment
+
+
+@bp.route("/<int:post_id>/<int:id>/delete_comment", methods=("POST",))
+@login_required
+def delete_comment(id, post_id):
+    comment = get_comment(id)
+    if comment["author_id"] != g.user["id"]:
+        flash("Invalid access.", "warning")
+    else:
+        conn = get_conn()
+        cur = get_cur()
+        cur.execute("DELETE FROM comments WHERE id = %s;", (id,))
+        conn.commit()
+        flash("The comment was successfully deleted.", "info")
+
+    return redirect(url_for("blog.detail", id=post_id))

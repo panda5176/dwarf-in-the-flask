@@ -40,9 +40,8 @@
         </div>
         <div class="my-2 py-2">
             <label for="about" class="form-label">About</label>
-            <textarea name="about" id="mdeditor">
-                {{ request.form['about'] or user['about'] }}
-            </textarea>
+            <textarea name="about"
+                id="mdeditor">{{ request.form['about'] or user['about'] }}</textarea>
         </div>
         <div class="text-end py-2">
             <input type="submit" value="Update"
