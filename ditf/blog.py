@@ -154,8 +154,9 @@ def get_tags_from_post_id(post_id):
 def get_comments_from_post_id(post_id):
     cur = get_cur()
     cur.execute(
-        "SELECT id, author_id, created, modified, body "
-        "FROM comments WHERE post_id = %s ORDER BY created;",
+        "SELECT c.id, author_id, created, modified, body, username "
+        "FROM comments c JOIN users u ON c.author_id = u.id "
+        "WHERE post_id = %s ORDER BY created;",
         (post_id,),
     )
     comments = cur.fetchall()

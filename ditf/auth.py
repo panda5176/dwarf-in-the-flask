@@ -47,6 +47,7 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        password_confirm = request.form["password-confirm"]
         mail = request.form["mail"]
         error = None
 
@@ -54,6 +55,10 @@ def register():
             error = "Username is required."
         elif not password:
             error = "Password is required."
+        elif not password_confirm:
+            error = "Password confirmation is required."
+        elif password != password_confirm:
+            error = "Confirm password."
         elif not mail:
             error = "Mail address is required."
         elif re.match("[^\w]", username):
@@ -207,6 +212,7 @@ def update(id):
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        password_confirm = request.form["password-confirm"]
         mail = request.form["mail"]
         about = request.form["about"]
         error = None
@@ -219,6 +225,12 @@ def update(id):
             error = "Username with only alphabets, numbers and underscores."
         elif re.match("[^\w]", password):
             error = "Password with only alphabets, numbers and underscores."
+
+        if password:
+            if not password_confirm:
+                error = "Password confirmation is required."
+            elif password != password_confirm:
+                error = "Confirm password."
 
         about = about.replace("<script>", "&lt;script&gt;")
 
