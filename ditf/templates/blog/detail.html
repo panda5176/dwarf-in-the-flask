@@ -55,10 +55,9 @@
                 {{ comment['username'] }}
             </a>
             <p class="fst-italic my-0">
-                on {{ comment['created'].strftime('%Y/%m/%d') }},
-                modified on {{ comment['modified'].strftime('%Y/%m/%d') }}
+                on {{ comment['created'].strftime('%Y/%m/%d') }}
             </p>
-            {% if g.user['id'] == post['author_id'] %}
+            {% if g.user['id'] == comment['author_id'] %}
             <form action="{{ url_for(
                 'blog.delete_comment', id=comment['id'], post_id=post['id']
                 ) }}" method="post">

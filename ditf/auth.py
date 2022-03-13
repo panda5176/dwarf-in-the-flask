@@ -61,10 +61,16 @@ def register():
             error = "Confirm password."
         elif not mail:
             error = "Mail address is required."
-        elif re.match("[^\w]", username):
-            error = "Username with only alphabets, numbers and underscores."
-        elif re.match("[^\w]", password):
-            error = "Password with only alphabets, numbers and underscores."
+        elif re.search("[^\w\!\@\#\$\%\^\&\*]", username):
+            error = (
+                "Username with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
+        elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
+            error = (
+                "Password with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
 
         if error:
             flash(error, "warning")
@@ -101,10 +107,16 @@ def login():
         password = request.form["password"]
         error = None
 
-        if re.match("[^\w]", username):
-            error = "Username with only alphabets, numbers and underscores."
-        elif re.match("[^\w]", password):
-            error = "Password with only alphabets, numbers and underscores."
+        if re.search("[^\w\!\@\#\$\%\^\&\*]", username):
+            error = (
+                "Username with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
+        elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
+            error = (
+                "Password with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
 
         if error:
             flash(error, "warning")
@@ -221,10 +233,16 @@ def update(id):
             error = "Username is required."
         elif not mail:
             error = "Mail address is required."
-        elif re.match("[^\w]", username):
-            error = "Username with only alphabets, numbers and underscores."
-        elif re.match("[^\w]", password):
-            error = "Password with only alphabets, numbers and underscores."
+        elif re.search("[^\w\!\@\#\$\%\^\&\*]", username):
+            error = (
+                "Username with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
+        elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
+            error = (
+                "Password with only alphabets, numbers "
+                "and _, !, @, #, $, %, ^, &, *."
+            )
 
         if password:
             if not password_confirm:
