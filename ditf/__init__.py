@@ -1,3 +1,4 @@
+from datetime import timezone
 from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
@@ -28,7 +29,11 @@ def create_app():
         for post in posts:
             xml_url = SubElement(xml_urlset, "url")
             xml_loc = f"{app.config['DOMAIN']}{post['id']}"
-            xml_lastmod = post["modified"].replace(microsecond=0).isoformat()
+            xml_lastmod = (
+                post["modified"]
+                .replace(microsecond=0, tzinfo=timezone.utc)
+                .isoformat()
+            )
             SubElement(xml_url, "loc").text = xml_loc
             SubElement(xml_url, "lastmod").text = xml_lastmod
             SubElement(xml_url, "changefreq").text = "daily"
