@@ -13,6 +13,7 @@ pre code {
 
 p code, li code {
   color: #f47067;
+  font-size: 0.9rem;
   margin: 0.2rem;
 }
 
@@ -27,6 +28,7 @@ p code, li code {
 
 article p, article li, article li strong {
   margin-bottom: 1rem;
+  line-height: 160%;
 }
 
 article a {
