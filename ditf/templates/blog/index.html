@@ -31,7 +31,7 @@
     {% endif %}
     {% endfor %}
 </div>
-{% for post in posts %}
+{% for post, total_comment in zip(posts, total_comments) %}
 <article class="my-2">
     <div class="d-flex flex-nowrap align-items-end">
         <h4 class="my-0">
@@ -40,6 +40,10 @@
                 {{ post['title'] }}
             </a>
         </h4>
+        <a href="{{ url_for('blog.detail', id=post['id'], _anchor='comments')}}"
+            class="ditf-link">
+            ({{ total_comment }})
+        </a>
     </div>
     <p class="fst-italic">
         by

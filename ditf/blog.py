@@ -52,6 +52,13 @@ def index():
         )
     posts = cur.fetchall()
 
+    total_comments = list()
+    for post in posts:
+        cur.execute(
+            "SELECT COUNT(*) FROM comments WHERE post_id=%s;", (post["id"],)
+        )
+        total_comments.append(cur.fetchone()[0])
+
     all_tags = get_all_tags()
 
     return render_template(
@@ -70,6 +77,8 @@ def index():
         bs_version=5,
         all_tags=all_tags,
         tag_id=int(tag_id),
+        total_comments=total_comments,
+        zip=zip,
     )
 
 

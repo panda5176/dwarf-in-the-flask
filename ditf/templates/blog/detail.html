@@ -45,7 +45,7 @@
 </article>
 <hr>
 {% for comment in comments %}
-<div class="card my-2">
+<div id="comments class=" card my-2"">
     <div class="card-body">
         <div class="d-flex flex-nowrap align-items-center border-bottom 
             mx-1 py-1">
@@ -89,7 +89,7 @@
                 {% else %}
                 <div class="col-10 col-lg-11 ps-0">
                     <textarea name="body" type="text" class="form-control"
-                        placeholder="New comment" rows="3"
+                        placeholder="Log In first" rows="3"
                         disabled>{{ request.form['body'] }}</textarea>
                 </div>
                 <input type="submit" value="Save" disabled
