@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import datetime, timezone
 from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
@@ -26,6 +26,21 @@ def create_app():
         xml_urlset.attrib = {
             "xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9"
         }
+
+        # index
+        xml_url = SubElement(xml_urlset, "url")
+        xml_loc = app.config["DOMAIN"]
+        xml_lastmod = (
+            datetime.now()
+            .replace(microsecond=0, tzinfo=timezone.utc)
+            .isoformat()
+        )
+        SubElement(xml_url, "loc").text = xml_loc
+        SubElement(xml_url, "lastmod").text = xml_lastmod
+        SubElement(xml_url, "changefreq").text = "daily"
+        SubElement(xml_url, "priority").text = "0.8"
+
+        # posts
         for post in posts:
             xml_url = SubElement(xml_urlset, "url")
             xml_loc = f"{app.config['DOMAIN']}{post['id']}"
