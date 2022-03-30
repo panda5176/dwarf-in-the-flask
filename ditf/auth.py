@@ -16,7 +16,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_conn, get_cur
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+BP = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 def login_required(view):
@@ -42,7 +42,7 @@ def admin_only(view):
     return wrapped_view
 
 
-@bp.route("/register", methods=("GET", "POST"))
+@BP.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
         username = request.form["username"]
@@ -100,7 +100,7 @@ def register():
     return render_template("auth/register.html")
 
 
-@bp.route("/login", methods=("GET", "POST"))
+@BP.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
         username = request.form["username"]
@@ -145,7 +145,7 @@ def login():
     return render_template("auth/login.html")
 
 
-@bp.before_app_request
+@BP.before_app_request
 def load_logged_in_user():
     user_id = session.get("user_id")
 
@@ -160,14 +160,14 @@ def load_logged_in_user():
         g.user = cur.fetchone()
 
 
-@bp.route("/logout")
+@BP.route("/logout")
 def logout():
     session.clear()
     flash("Successfully logged out.", "info")
     return redirect(url_for("index"))
 
 
-@bp.route("/<int:id>", methods=("GET",))
+@BP.route("/<int:id>", methods=("GET",))
 def userinfo(id):
     cur = get_cur()
     cur.execute("SELECT id, username, about FROM users WHERE id = %s;", (id,))
@@ -209,7 +209,7 @@ def userinfo(id):
     )
 
 
-@bp.route("/<int:id>/update", methods=("GET", "POST"))
+@BP.route("/<int:id>/update", methods=("GET", "POST"))
 def update(id):
     cur = get_cur()
     cur.execute(

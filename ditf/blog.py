@@ -14,7 +14,7 @@ from werkzeug.exceptions import abort
 from .auth import admin_only, login_required
 from .db import get_conn, get_cur
 
-bp = Blueprint("blog", __name__)
+BP = Blueprint("blog", __name__)
 
 
 def get_all_tags():
@@ -24,7 +24,7 @@ def get_all_tags():
     return tags
 
 
-@bp.route("/", methods=("GET",))
+@BP.route("/", methods=("GET",))
 def index():
     per_page = 10
     page, _, offset = get_page_args(per_page=per_page)
@@ -82,7 +82,7 @@ def index():
     )
 
 
-@bp.route("/create", methods=("GET", "POST"))
+@BP.route("/create", methods=("GET", "POST"))
 @admin_only
 @login_required
 def create():
@@ -176,7 +176,7 @@ def get_comments_from_post_id(post_id):
     return comments
 
 
-@bp.route("/<int:id>", methods=("GET",))
+@BP.route("/<int:id>", methods=("GET",))
 def detail(id):
     post = get_post(id)
     tags = get_tags_from_post_id(id)
@@ -195,7 +195,7 @@ def detail(id):
     )
 
 
-@bp.route("/<int:id>/update", methods=("GET", "POST"))
+@BP.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
     post = get_post(id)
@@ -254,7 +254,7 @@ def update(id):
     )
 
 
-@bp.route("/<int:id>/delete", methods=("POST",))
+@BP.route("/<int:id>/delete", methods=("POST",))
 @login_required
 def delete(id):
     post = get_post(id)
@@ -271,7 +271,7 @@ def delete(id):
     return redirect(url_for("blog.index"))
 
 
-@bp.route("/<int:post_id>/create_comment", methods=("POST",))
+@BP.route("/<int:post_id>/create_comment", methods=("POST",))
 @login_required
 def create_comment(post_id):
     body = request.form["body"]
@@ -313,7 +313,7 @@ def get_comment(id):
     return comment
 
 
-@bp.route("/<int:post_id>/<int:id>/delete_comment", methods=("POST",))
+@BP.route("/<int:post_id>/<int:id>/delete_comment", methods=("POST",))
 @login_required
 def delete_comment(id, post_id):
     comment = get_comment(id)

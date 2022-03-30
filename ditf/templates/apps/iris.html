@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<div class="d-flex flex-nowrap align-items-center border-bottom py-1">
+    <h2 class="my-0 fw-bold">
+        <a href="#" class="ditf-link">
+            {% block title %}Iris{% endblock %}
+        </a>
+    </h2>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="ratio ratio-4x3">
+    <iframe src="/iris-scatter"></iframe>
+</div>
+<div class="ratio ratio-4x3">
+    <iframe src="/iris-box"></iframe>
+</div>
+{% endblock %}

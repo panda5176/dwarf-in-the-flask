@@ -1,9 +1,10 @@
+from collections import defaultdict
 from datetime import datetime, timezone
 from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
 from flask import Flask, send_file
-from . import auth, blog, db
+from . import auth, apps, blog, db
 
 
 def create_app():
@@ -11,9 +12,15 @@ def create_app():
     app.config.from_json("config.json")
 
     db.init_app(app)
+    dash_apps = apps.init_dash(app)
+    app.config["dash"] = defaultdict(dict)
+    for plots_category, plots in dash_apps.items():
+        for plot_name, plot_app in plots.items():
+            app.config["dash"][plots_category][plot_name] = plot_app
 
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(blog.bp)
+    app.register_blueprint(auth.BP)
+    app.register_blueprint(apps.BP)
+    app.register_blueprint(blog.BP)
     app.add_url_rule("/", endpoint="index")
 
     @app.route("/sitemap.xml", methods=("GET",))
