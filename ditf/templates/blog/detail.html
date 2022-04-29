@@ -9,6 +9,7 @@
     </h2>
     {% if g.user['id'] == post['author_id'] %}
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="submit" value="Delete"
             onclick="return confirm('Are you sure?');"
             class="btn btn-sm btn-danger mx-2">
@@ -61,6 +62,8 @@
             <form action="{{ url_for(
                 'blog.delete_comment', id=comment['id'], post_id=post['id']
                 ) }}" method="post">
+                <input type="hidden" name="csrf_token"
+                    value="{{ csrf_token() }}">
                 <input type="submit" value="Delete"
                     onclick="return confirm('Are you sure?');"
                     class="btn btn-sm btn-danger mx-2">
@@ -75,6 +78,7 @@
 {% endfor %}
 <form method="post"
     action=" {{ url_for('blog.create_comment', post_id=post['id']) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="card my-2">
         <div class="card-body">
             <div class="row px-2">

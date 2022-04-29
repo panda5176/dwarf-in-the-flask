@@ -4,6 +4,7 @@ from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
 from flask import Flask, send_file
+from flask_wtf.csrf import CSRFProtect
 from . import auth, apps, blog, db
 
 
@@ -22,6 +23,9 @@ def create_app():
     app.register_blueprint(apps.BP)
     app.register_blueprint(blog.BP)
     app.add_url_rule("/", endpoint="index")
+
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     @app.route("/sitemap.xml", methods=("GET",))
     def show_sitemap():

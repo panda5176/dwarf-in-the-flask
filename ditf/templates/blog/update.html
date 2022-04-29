@@ -8,6 +8,7 @@
         </a>
     </h2>
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="submit" value="Delete"
             onclick="return confirm('Are you sure?');"
             class="btn btn-sm btn-danger mx-2">
@@ -17,6 +18,7 @@
 
 {% block content %}
 <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="my-2">
         <input name="title" value="{{ request.form['title'] or post['title'] }}"
             required placeholder="Title" class="form-control">
