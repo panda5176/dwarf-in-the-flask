@@ -295,7 +295,7 @@ def create_comment(post_id):
         conn.commit()
         flash("The comment was successfully created.", "info")
 
-    return redirect(url_for("blog.detail", id=post_id))
+    return redirect(url_for("blog.detail", id=post_id, _anchor="comments"))
 
 
 def get_comment(id):
@@ -326,4 +326,5 @@ def delete_comment(id, post_id):
         conn.commit()
         flash("The comment was successfully deleted.", "info")
 
-    return redirect(url_for("blog.detail", id=post_id))
+    return redirect(url_for("blog.detail", id=post_id, _anchor="comments"))
+

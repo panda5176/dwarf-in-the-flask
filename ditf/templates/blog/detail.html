@@ -45,37 +45,39 @@
     {{ body | safe }}
 </article>
 <hr>
-{% for comment in comments %}
-<div id="comments class=" card my-2"">
-    <div class="card-body">
-        <div class="d-flex flex-nowrap align-items-center border-bottom 
+<div id="comments">
+    {% for comment in comments %}
+    <div id="comment" class="card my-2">
+        <div class="card-body">
+            <div class="d-flex flex-nowrap align-items-center border-bottom 
             mx-1 py-1">
-            <p class="fst-italic my-0">by</p>
-            <a href="{{ url_for('auth.userinfo', id=comment['author_id']) }}"
-                class="ditf-link fw-bold fst-italic mx-1">
-                {{ comment['username'] }}
-            </a>
-            <p class="fst-italic my-0">
-                on {{ comment['created'].strftime('%Y/%m/%d') }}
-            </p>
-            {% if g.user['id'] == comment['author_id'] %}
-            <form action="{{ url_for(
+                <p class="fst-italic my-0">by</p>
+                <a href="{{ url_for('auth.userinfo', id=comment['author_id']) }}"
+                    class="ditf-link fw-bold fst-italic mx-1">
+                    {{ comment['username'] }}
+                </a>
+                <p class="fst-italic my-0">
+                    on {{ comment['created'].strftime('%Y/%m/%d') }}
+                </p>
+                {% if g.user['id'] == comment['author_id'] %}
+                <form action="{{ url_for(
                 'blog.delete_comment', id=comment['id'], post_id=post['id']
                 ) }}" method="post">
-                <input type="hidden" name="csrf_token"
-                    value="{{ csrf_token() }}">
-                <input type="submit" value="Delete"
-                    onclick="return confirm('Are you sure?');"
-                    class="btn btn-sm btn-danger mx-2">
-            </form>
-            {% endif %}
-        </div>
-        <div class="mx-1 my-3">
-            {{ comment['body'] }}
+                    <input type="hidden" name="csrf_token"
+                        value="{{ csrf_token() }}">
+                    <input type="submit" value="Delete"
+                        onclick="return confirm('Are you sure?');"
+                        class="btn btn-sm btn-danger mx-2">
+                </form>
+                {% endif %}
+            </div>
+            <div class="mx-1 my-3">
+                {{ comment['body'] }}
+            </div>
         </div>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 <form method="post"
     action=" {{ url_for('blog.create_comment', post_id=post['id']) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
