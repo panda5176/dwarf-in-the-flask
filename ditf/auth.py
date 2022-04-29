@@ -12,6 +12,7 @@ from flask import (
 )
 from flask_paginate import Pagination, get_page_args
 from markdown import markdown
+from werkzeug.exceptions import abort
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_conn, get_cur
@@ -145,6 +146,20 @@ def login():
     return render_template("auth/login.html")
 
 
+def get_user(id):
+    cur = get_cur()
+    cur.execute(
+        "SELECT id, username, mail, about, password FROM users WHERE id = %s;",
+        (id,),
+    )
+    user = cur.fetchone()
+
+    if user is None:
+        abort(404, f"User ID {id} doesn't exist.")
+
+    return user
+
+
 @BP.before_app_request
 def load_logged_in_user():
     user_id = session.get("user_id")
@@ -152,12 +167,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        cur = get_cur()
-        cur.execute(
-            "SELECT id, username, mail, about FROM users WHERE id = %s;",
-            (user_id,),
-        )
-        g.user = cur.fetchone()
+        g.user = get_user(user_id)
 
 
 @BP.route("/logout")
@@ -170,8 +180,7 @@ def logout():
 @BP.route("/<int:id>", methods=("GET",))
 def userinfo(id):
     cur = get_cur()
-    cur.execute("SELECT id, username, about FROM users WHERE id = %s;", (id,))
-    user = cur.fetchone()
+    user = get_user(id)
     about = markdown(
         user["about"], extensions=["nl2br", "tables", "fenced_code"]
     )
@@ -212,11 +221,7 @@ def userinfo(id):
 @BP.route("/<int:id>/update", methods=("GET", "POST"))
 def update(id):
     cur = get_cur()
-    cur.execute(
-        "SELECT id, username, mail, about, password FROM users WHERE id = %s;",
-        (id,),
-    )
-    user = cur.fetchone()
+    user = get_user(id)
     if user["id"] != g.user["id"]:
         flash("Invalid access.", "warning")
         return redirect(url_for("auth.userinfo", id=id))

@@ -140,7 +140,7 @@ def get_post(id):
     post = cur.fetchone()
 
     if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
+        abort(404, f"Post ID {id} doesn't exist.")
 
     return post
 
@@ -155,7 +155,7 @@ def get_tags_from_post_id(post_id):
     tags = cur.fetchall()
 
     if tags is None:
-        abort(404, f"Post id {post_id} doesn't exist.")
+        abort(404, f"Post ID {post_id} doesn't exist.")
 
     return tags
 
@@ -171,7 +171,7 @@ def get_comments_from_post_id(post_id):
     comments = cur.fetchall()
 
     if comments is None:
-        abort(404, f"Post id {post_id} doesn't exist.")
+        abort(404, f"Post ID {post_id} doesn't exist.")
 
     return comments
 
