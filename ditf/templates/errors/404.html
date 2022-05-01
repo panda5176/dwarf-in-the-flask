@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h2 class="fw-bold border-bottom py-1">
+    {% block title %}Error{% endblock %}
+</h2>
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-8 col-md-8 col-lg-6 mx-auto">
+    <h1 class="text-center fw-bold pt-3">404</h1>
+    <h4 class="text-center fw-bold">Page Not Found</h4>
+    <div class="d-flex justify-content-center py-3">
+        <a href="/" class="btn btn-lg btn-outline-secondary fw-bold">
+            Go to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

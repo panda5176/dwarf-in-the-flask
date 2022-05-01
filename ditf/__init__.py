@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
-from flask import Flask, send_file
+from flask import Flask, render_template, send_file
 from flask_wtf.csrf import CSRFProtect
 from . import auth, apps, blog, db
 
@@ -26,6 +26,10 @@ def create_app():
 
     csrf = CSRFProtect()
     csrf.init_app(app)
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template("errors/404.html"), 404
 
     @app.route("/sitemap.xml", methods=("GET",))
     def show_sitemap():
