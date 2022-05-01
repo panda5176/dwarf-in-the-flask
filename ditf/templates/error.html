@@ -8,8 +8,11 @@
 
 {% block content %}
 <div class="col-sm-8 col-md-8 col-lg-6 mx-auto">
-    <h1 class="text-center fw-bold pt-3">404</h1>
-    <h4 class="text-center fw-bold">Page Not Found</h4>
+    <h1 class="text-center fw-bold pt-3">{{ error_code }}</h1>
+    <h3 class="text-center fw-bold">{{ error_type }}</h3>
+    {% if error_desc %}
+    <h6 class="text-center fst-italic pt-2">{{ error_desc }}</h6>
+    {% endif %}
     <div class="d-flex justify-content-center py-3">
         <a href="/" class="btn btn-lg btn-outline-secondary fw-bold">
             Go to Home

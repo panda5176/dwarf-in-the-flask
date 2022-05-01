@@ -35,8 +35,7 @@ def admin_only(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user["id"] != 1:
-            flash("Invalid access.", "warning")
-            return redirect(url_for("blog.index"))
+            abort(403, f"Invalid access.")
 
         return view(**kwargs)
 
@@ -141,6 +140,7 @@ def login():
                 session.clear()
                 session["user_id"] = user["id"]
                 flash("Successfully logged in.", "info")
+
                 return redirect(url_for("index"))
 
     return render_template("auth/login.html")
@@ -174,6 +174,7 @@ def load_logged_in_user():
 def logout():
     session.clear()
     flash("Successfully logged out.", "info")
+
     return redirect(url_for("index"))
 
 
@@ -223,8 +224,7 @@ def update(id):
     cur = get_cur()
     user = get_user(id)
     if user["id"] != g.user["id"]:
-        flash("Invalid access.", "warning")
-        return redirect(url_for("auth.userinfo", id=id))
+        abort(403, f"Invalid access.")
 
     if request.method == "POST":
         username = request.form["username"]

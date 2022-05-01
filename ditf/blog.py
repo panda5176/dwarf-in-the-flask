@@ -21,6 +21,7 @@ def get_all_tags():
     cur = get_cur()
     cur.execute("SELECT * FROM tags ORDER BY title;")
     tags = cur.fetchall()
+
     return tags
 
 
@@ -200,8 +201,7 @@ def detail(id):
 def update(id):
     post = get_post(id)
     if post["author_id"] != g.user["id"]:
-        flash("Invalid access.", "warning")
-        return redirect(url_for("blog.detail", id=id))
+        abort(403, f"Invalid access.")
 
     tag_ids = [tag["id"] for tag in get_tags_from_post_id(id)]
     all_tags = get_all_tags()
@@ -259,8 +259,7 @@ def update(id):
 def delete(id):
     post = get_post(id)
     if post["author_id"] != g.user["id"]:
-        flash("Invalid access.", "warning")
-        return redirect(url_for("blog.detail", id=id))
+        abort(403, f"Invalid access.")
 
     conn = get_conn()
     cur = get_cur()
@@ -268,6 +267,7 @@ def delete(id):
     cur.execute("DELETE FROM posts WHERE id = %s;", (id,))
     conn.commit()
     flash("The post was successfully deleted.", "info")
+
     return redirect(url_for("blog.index"))
 
 
@@ -318,13 +318,13 @@ def get_comment(id):
 def delete_comment(id, post_id):
     comment = get_comment(id)
     if comment["author_id"] != g.user["id"]:
-        flash("Invalid access.", "warning")
-    else:
-        conn = get_conn()
-        cur = get_cur()
-        cur.execute("DELETE FROM comments WHERE id = %s;", (id,))
-        conn.commit()
-        flash("The comment was successfully deleted.", "info")
+        abort(403, f"Invalid access.")
+
+    conn = get_conn()
+    cur = get_cur()
+    cur.execute("DELETE FROM comments WHERE id = %s;", (id,))
+    conn.commit()
+    flash("The comment was successfully deleted.", "info")
 
     return redirect(url_for("blog.detail", id=post_id, _anchor="comments"))
 
