@@ -32,6 +32,7 @@ def login_required(view):
 
 
 def admin_only(view):
+    @login_required
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user["id"] != 1:
