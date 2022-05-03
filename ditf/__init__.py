@@ -5,7 +5,7 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
 from flask import Flask, render_template, send_file
 from flask_wtf.csrf import CSRFError, CSRFProtect
-from . import auth, apps, blog, db
+from . import admin, auth, apps, blog, db
 
 
 def create_app():
@@ -19,6 +19,7 @@ def create_app():
         for plot_name, plot_app in plots.items():
             app.config["dash"][plots_category][plot_name] = plot_app
 
+    app.register_blueprint(admin.BP)
     app.register_blueprint(auth.BP)
     app.register_blueprint(apps.BP)
     app.register_blueprint(blog.BP)

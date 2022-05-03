@@ -1,6 +1,4 @@
-import dash_core_components as dcc
-import dash_html_components as html
-from dash import Dash
+from dash import Dash, dcc, html
 from flask import Blueprint, current_app, render_template
 
 BP = Blueprint("apps", __name__, url_prefix="/apps")
