@@ -52,8 +52,9 @@
             <div class="d-flex flex-nowrap align-items-center border-bottom 
             mx-1 py-1">
                 <p class="fst-italic my-0">by</p>
-                <a href="{{ url_for('auth.userinfo', id=comment['author_id']) }}"
-                    class="ditf-link fw-bold fst-italic mx-1">
+                <a href="{{
+                    url_for('auth.userinfo', id=comment['author_id'])
+                }}" class="ditf-link fw-bold fst-italic mx-1">
                     {{ comment['username'] }}
                 </a>
                 <p class="fst-italic my-0">

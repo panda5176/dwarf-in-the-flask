@@ -1,16 +1,7 @@
-from flask import (
-    Blueprint,
-    flash,
-    g,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_paginate import Pagination, get_page_args
-from werkzeug.exceptions import abort
 
-from .auth import admin_only, get_user
+from .auth import admin_only
 from .db import get_conn, get_cur
 
 BP = Blueprint("admin", __name__, url_prefix="/admin")
