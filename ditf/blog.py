@@ -25,16 +25,25 @@ def get_all_tags():
     return tags
 
 
-@BP.route("/", methods=("GET",))
+@BP.route("/", methods=("GET", "POST"))
 def index():
     per_page = 10
     page, _, offset = get_page_args(per_page=per_page)
     tag_id = request.args.get("tag_id", 0)
 
     cur = get_cur()
-    cur.execute("SELECT COUNT(*) FROM posts;")
-    total = cur.fetchone()[0]
-    if tag_id:
+    if request.method == "POST":
+        query = request.form["query"].replace("<script>", "&lt;script&gt;")
+        query_for_like = "%" + query + "%"
+        cur.execute(
+            "SELECT p.id, title, body, created, modified, author_id, views, "
+            "username "
+            "FROM posts p JOIN users u ON p.author_id = u.id "
+            "WHERE (title LIKE %s) OR (body LIKE %s) "
+            "ORDER BY created DESC LIMIT %s OFFSET %s;",
+            (query_for_like, query_for_like, per_page, offset),
+        )
+    elif tag_id:
         cur.execute(
             "SELECT p.id, title, body, created, modified, author_id, views, "
             "username "
@@ -56,7 +65,7 @@ def index():
     total_comments = list()
     for post in posts:
         cur.execute(
-            "SELECT COUNT(*) FROM comments WHERE post_id=%s;", (post["id"],)
+            "SELECT COUNT(*) FROM comments WHERE post_id = %s;", (post["id"],)
         )
         total_comments.append(cur.fetchone()[0])
 
@@ -67,7 +76,7 @@ def index():
         posts=posts,
         pagination=Pagination(
             page=page,
-            total=total,
+            total=len(posts),
             per_page=per_page,
             prev_label="<<",
             next_label=">>",
@@ -76,6 +85,7 @@ def index():
         ),
         search=True,
         bs_version=5,
+        total=len(posts),
         all_tags=all_tags,
         tag_id=int(tag_id),
         total_comments=total_comments,
@@ -105,14 +115,14 @@ def create():
         else:
             conn = get_conn()
             cur = get_cur()
+            cur.execute("SELECT MAX(id) FROM posts;")
+            post_id = cur.fetchone()[0]
+
             cur.execute(
                 "INSERT INTO posts (title, body, author_id, views)"
                 " VALUES (%s, %s, %s, 0);",
                 (title, body, g.user["id"]),
             )
-
-            cur.execute("SELECT MAX(id) FROM posts;")
-            post_id = cur.fetchone()[0]
 
             for tag in all_tags:
                 if request.form.get(f"tag-{tag['id']}"):

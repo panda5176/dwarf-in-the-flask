@@ -1,18 +1,34 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<div class="d-flex flex-nowrap align-items-center border-bottom py-1">
-    <h2 class="my-0 fw-bold">
-        <a href="#" class="ditf-link">
-            {% block title %}Posts{% endblock %}
+<div class="d-flex flex-nowrap justify-content-between border-bottom py-1">
+    <div class="d-flex flex-nowrap align-items-center">
+        <h2 class="my-0 fw-bold">
+            <a href="#" class="ditf-link">
+                {% block title %}Posts{% endblock %}
+            </a>
+        </h2>
+        {% if g.user['id'] == 1 %}
+        <a class="btn btn-sm btn-outline-secondary mx-2"
+            href="{{ url_for('blog.create') }}">
+            New
         </a>
-    </h2>
-    {% if g.user['id'] == 1 %}
-    <a class="btn btn-sm btn-outline-secondary mx-2"
-        href="{{ url_for('blog.create') }}">
-        New
-    </a>
-    {% endif %}
+        {% endif %}
+    </div>
+    <form method="post">
+        <div class="d-flex flex-nowrap align-items-center">
+            <small class="text-muted text-nowrap mx-2">
+                Total {{ total }} posts
+            </small>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input name="query" id="query" value="{{ request.form['query'] }}"
+                placeholder="Search" required
+                class="form-control form-control-sm">
+            <button type="submit" value="Search" class="btn btn-link">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}
 
