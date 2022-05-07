@@ -34,12 +34,12 @@ def index():
     cur = get_cur()
     if request.method == "POST":
         query = request.form["query"].replace("<script>", "&lt;script&gt;")
-        query_for_like = "%" + query + "%"
+        query_for_like = ("%" + query + "%").lower()
         cur.execute(
             "SELECT p.id, title, body, created, modified, author_id, views, "
             "username "
             "FROM posts p JOIN users u ON p.author_id = u.id "
-            "WHERE (title LIKE %s) OR (body LIKE %s) "
+            "WHERE (LOWER(title) LIKE %s) OR (LOWER(body) LIKE %s) "
             "ORDER BY created DESC LIMIT %s OFFSET %s;",
             (query_for_like, query_for_like, per_page, offset),
         )
