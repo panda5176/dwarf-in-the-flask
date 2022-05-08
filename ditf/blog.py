@@ -36,6 +36,12 @@ def index():
         query = request.form["query"].replace("<script>", "&lt;script&gt;")
         query_for_like = ("%" + query + "%").lower()
         cur.execute(
+            "SELECT COUNT(*) FROM posts "
+            "WHERE (LOWER(title) LIKE %s) OR (LOWER(body) LIKE %s);",
+            (query_for_like, query_for_like),
+        )
+        total = cur.fetchone()[0]
+        cur.execute(
             "SELECT p.id, title, body, created, modified, author_id, views, "
             "username "
             "FROM posts p JOIN users u ON p.author_id = u.id "
@@ -45,6 +51,12 @@ def index():
         )
     elif tag_id:
         cur.execute(
+            "SELECT COUNT(*) FROM posts p "
+            "JOIN post2tag pt ON p.id = pt.post_id WHERE pt.tag_id = %s;",
+            (tag_id,),
+        )
+        total = cur.fetchone()[0]
+        cur.execute(
             "SELECT p.id, title, body, created, modified, author_id, views, "
             "username "
             "FROM posts p JOIN users u ON p.author_id = u.id "
@@ -53,6 +65,8 @@ def index():
             (tag_id, per_page, offset),
         )
     else:
+        cur.execute("SELECT COUNT(*) FROM posts p;")
+        total = cur.fetchone()[0]
         cur.execute(
             "SELECT p.id, title, body, created, modified, author_id, views, "
             "username "
@@ -60,6 +74,7 @@ def index():
             "ORDER BY created DESC LIMIT %s OFFSET %s;",
             (per_page, offset),
         )
+    print(total)
     posts = cur.fetchall()
 
     total_comments = list()
@@ -76,7 +91,7 @@ def index():
         posts=posts,
         pagination=Pagination(
             page=page,
-            total=len(posts),
+            total=total,
             per_page=per_page,
             prev_label="<<",
             next_label=">>",
@@ -85,7 +100,7 @@ def index():
         ),
         search=True,
         bs_version=5,
-        total=len(posts),
+        total=total,
         all_tags=all_tags,
         tag_id=int(tag_id),
         total_comments=total_comments,
