@@ -2,7 +2,9 @@
   font-family: 'Nanum Myeongjo', serif;
 }
 
-code, pre code, pre code span {
+code,
+pre code,
+pre code span {
   font-family: 'Nanum Gothic Coding', monospace;
   font-size: 0.8rem;
 }
@@ -11,7 +13,8 @@ pre code {
   border-radius: 0.3rem;
 }
 
-p code, li code {
+p code,
+li code {
   color: #f47067;
   background: #eee;
   border-radius: 0.2rem;
@@ -32,7 +35,9 @@ p code, li code {
   color: #6c757d;
 }
 
-article p, article li, article li strong {
+article p,
+article li,
+article li strong {
   margin-bottom: 1rem;
   line-height: 160%;
 }
@@ -43,6 +48,10 @@ article a {
 
 article a:hover {
   color: #6c757d;
+}
+
+article img {
+  max-width: 100%;
 }
 
 .pagination a {
