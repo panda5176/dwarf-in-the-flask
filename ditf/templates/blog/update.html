@@ -11,7 +11,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="submit" value="삭제" onclick="return confirm(
             '정말 삭제할까요?'
-            );" class="btn btn-sm btn-danger mx-2">
+            );" class="btn btn-sm btn-danger text-nowrap mx-2">
     </form>
 </div>
 {% endblock %}
@@ -33,7 +33,7 @@
             name="tag-{{ tag['id'] }}" autocomplete="on">
         {% endif %}
         <label for="tag-{{ tag['id'] }}"
-            class="btn btn-sm btn-outline-secondary">
+            class="btn btn-sm btn-outline-secondary text-nowrap">
             {{ tag['title'] }}
         </label>
         {% endfor %}
@@ -44,7 +44,7 @@
     </div>
     <div class="text-end">
         <input type="submit" value="저장"
-            class="btn btn-sm btn-outline-secondary">
+            class="btn btn-sm btn-outline-secondary text-nowrap">
     </div>
 </form>
 {% endblock %}

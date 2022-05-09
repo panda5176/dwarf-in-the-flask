@@ -20,7 +20,7 @@
         <input type="checkbox" class="btn-check" id="tag-{{ tag['id'] }}"
             name="tag-{{ tag['id'] }}" autocomplete="on">
         <label for="tag-{{ tag['id'] }}"
-            class="btn btn-sm btn-outline-secondary">
+            class="btn btn-sm btn-outline-secondary text-nowrap">
             {{ tag['title'] }}
         </label>
         {% endfor %}
@@ -31,7 +31,7 @@
     </div>
     <div class="text-end">
         <input type="submit" value="저장"
-            class="btn btn-sm btn-outline-secondary">
+            class="btn btn-sm btn-outline-secondary text-nowrap">
     </div>
 </form>
 {% endblock %}

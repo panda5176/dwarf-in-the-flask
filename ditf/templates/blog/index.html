@@ -9,7 +9,7 @@
             </a>
         </h3>
         {% if g.user['id'] == 1 %}
-        <a class="btn btn-sm btn-outline-secondary mx-2"
+        <a class="btn btn-sm btn-outline-secondary text-nowrap mx-2"
             href="{{ url_for('blog.create') }}">
             새 글
         </a>
@@ -35,11 +35,12 @@
 <div class="d-flex flex-wrap align-items-center py-2">
     {% for tag in all_tags %}
     {% if tag_id == tag['id'] %}
-    <a class="btn btn-sm btn-secondary mx-1" href="{{ url_for('blog.index') }}">
+    <a class="btn btn-sm btn-secondary text-nowrap mx-1"
+        href="{{ url_for('blog.index') }}">
         {{ tag['title'] }}
     </a>
     {% else %}
-    <a class="btn btn-sm btn-outline-secondary mx-1"
+    <a class="btn btn-sm btn-outline-secondary text-nowrap mx-1"
         href="{{ url_for('blog.index', tag_id=tag['id']) }}">
         {{ tag['title'] }}
     </a>

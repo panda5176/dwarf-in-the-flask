@@ -50,7 +50,7 @@
         <header class="row pt-4 pb-2 justify-content-center">
             <div class="row col-md-8 flex-nowrap align-items-center">
                 <div class="col-2">
-                    <a class="btn btn-sm btn-secondary fw-bold">
+                    <a class="btn btn-sm btn-secondary fw-bold text-nowrap">
                         블로그
                     </a>
                 </div>
@@ -64,20 +64,20 @@
                 </div>
                 <div class="col-3 text-end">
                     {% if g.user %}
-                    <a class="btn btn-sm btn-secondary my-1"
+                    <a class="btn btn-sm btn-secondary text-nowrap my-1"
                         href="{{ url_for('auth.userinfo', id=g.user['id']) }}">
                         {{ g.user['username'] }}
                     </a>
-                    <a class=" btn btn-sm btn-secondary my-1"
+                    <a class=" btn btn-sm btn-secondary text-nowrap my-1"
                         href="{{ url_for('auth.logout') }}">
                         로그아웃
                     </a>
                     {% else %}
-                    <a class="btn btn-sm btn-outline-secondary my-1"
+                    <a class="btn btn-sm btn-outline-secondary text-nowrap my-1"
                         href="{{ url_for('auth.register') }}">
                         가입
                     </a>
-                    <a class="btn btn-sm btn-outline-secondary my-1"
+                    <a class="btn btn-sm btn-outline-secondary text-nowrap my-1"
                         href="{{ url_for('auth.login') }}">
                         로그인
                     </a>

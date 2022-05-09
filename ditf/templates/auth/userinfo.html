@@ -8,7 +8,7 @@
         </a>
     </h3>
     {% if g.user['id'] == user['id'] %}
-    <a class="btn btn-sm btn-outline-secondary mx-2"
+    <a class="btn btn-sm btn-outline-secondary text-nowrap mx-2"
         href="{{ url_for('auth.update', id=user['id']) }}">
         수정
     </a>
