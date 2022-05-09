@@ -20,7 +20,7 @@ CREATE TABLE posts (
   title VARCHAR(100) NOT NULL,
   body TEXT NOT NULL,
   views INTEGER NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES users (id)
+  FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE;
 );
 
 CREATE TABLE comments (
@@ -30,8 +30,8 @@ CREATE TABLE comments (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   body TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES users (id),
-  FOREIGN KEY (post_id) REFERENCES posts (id)
+  FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE;
 );
 
 CREATE TABLE tags (
@@ -42,9 +42,6 @@ CREATE TABLE tags (
 CREATE TABLE post2tag (
   post_id INTEGER NOT NULL,
   tag_id INTEGER NOT NULL,
-  FOREIGN KEY (post_id) REFERENCES posts (id),
-  FOREIGN KEY (tag_id) REFERENCES tags (id)
+  FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE;
 );
-
-INSERT INTO tags (title) VALUES ('Python');
-INSERT INTO tags (title) VALUES ('Flask');

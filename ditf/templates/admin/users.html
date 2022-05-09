@@ -2,31 +2,31 @@
 
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
-    <h2 class="my-0 fw-bold">
+    <h3 class="my-0 fw-bold">
         <a href="#" class="ditf-link">
-            {% block title %}Admin{% endblock %}
+            {% block title %}관리자{% endblock %}
         </a>
-    </h2>
+    </h3>
     <a class="btn btn-sm btn-outline-secondary mx-2 active"
         href="{{ url_for('admin.view_users') }}">
-        Users
+        사용자
     </a>
     <a class="btn btn-sm btn-outline-secondary"
         href="{{ url_for('admin.view_comments') }}">
-        Comments
+        댓글
     </a>
 </div>
 {% endblock %}
 
 {% block content %}
 <table class="table table-sm table-striped table-hover caption-top">
-    <caption>Total {{ total }}</caption>
+    <caption>총 {{ total }}명</caption>
     <thead>
         <tr>
-            <th scope="col" class="text-center">ID</th>
-            <th scope="col" class="text-center">Username</th>
-            <th scope="col" class="text-center">Mail</th>
-            <th scope="col" class="text-center">Actions</th>
+            <th scope="col" class="text-center">순서</th>
+            <th scope="col" class="text-center">아이디</th>
+            <th scope="col" class="text-center">메일</th>
+            <th scope="col" class="text-center">작업</th>
         </tr>
     </thead>
     <tbody>
@@ -45,8 +45,8 @@
                     method="post">
                     <input type="hidden" name="csrf_token"
                         value="{{ csrf_token() }}">
-                    <input type="submit" value="Delete"
-                        onclick="return confirm('Are you sure?');"
+                    <input type="submit" value="삭제"
+                        onclick="return confirm('정말 삭제할까요?');"
                         class="btn btn-sm btn-danger mx-2">
                 </form>
             </td>

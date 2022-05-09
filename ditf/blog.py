@@ -74,7 +74,6 @@ def index():
             "ORDER BY created DESC LIMIT %s OFFSET %s;",
             (per_page, offset),
         )
-    print(total)
     posts = cur.fetchall()
 
     total_comments = list()
@@ -115,41 +114,30 @@ def create():
     all_tags = get_all_tags()
 
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
+        title = request.form["title"].replace("<script>", "&lt;script&gt;")
+        body = request.form["body"].replace("<script>", "&lt;script&gt;")
 
-        if not title:
-            error = "Title is required."
+        conn = get_conn()
+        cur = get_cur()
+        cur.execute("SELECT MAX(id) FROM posts;")
+        post_id = cur.fetchone()[0] + 1
 
-        title = title.replace("<script>", "&lt;script&gt;")
-        body = body.replace("<script>", "&lt;script&gt;")
+        cur.execute(
+            "INSERT INTO posts (title, body, author_id, views) "
+            "VALUES (%s, %s, %s, 0);",
+            (title, body, g.user["id"]),
+        )
 
-        if error:
-            flash(error, "warning")
-        else:
-            conn = get_conn()
-            cur = get_cur()
-            cur.execute("SELECT MAX(id) FROM posts;")
-            post_id = cur.fetchone()[0]
+        for tag in all_tags:
+            if request.form.get(f"tag-{tag['id']}"):
+                cur.execute(
+                    "INSERT INTO post2tag (post_id, tag_id) VALUES (%s, %s);",
+                    (post_id, tag["id"]),
+                )
 
-            cur.execute(
-                "INSERT INTO posts (title, body, author_id, views)"
-                " VALUES (%s, %s, %s, 0);",
-                (title, body, g.user["id"]),
-            )
-
-            for tag in all_tags:
-                if request.form.get(f"tag-{tag['id']}"):
-                    cur.execute(
-                        "INSERT INTO post2tag (post_id, tag_id)"
-                        " VALUES (%s, %s);",
-                        (post_id, tag["id"]),
-                    )
-
-            conn.commit()
-            flash("The post was successfully created.", "info")
-            return redirect(url_for("blog.detail", id=post_id))
+        conn.commit()
+        flash("글을 등록했습니다.", "info")
+        return redirect(url_for("blog.detail", id=post_id))
 
     return render_template("blog/create.html", all_tags=all_tags)
 
@@ -158,15 +146,14 @@ def get_post(id):
     cur = get_cur()
     cur.execute(
         "SELECT p.id, author_id, created, modified, title, body, views, "
-        "username "
-        "FROM posts p JOIN users u ON p.author_id = u.id "
+        "username FROM posts p JOIN users u ON p.author_id = u.id "
         "WHERE p.id = %s;",
         (id,),
     )
     post = cur.fetchone()
 
     if post is None:
-        abort(404, f"Post ID {id} doesn't exist.")
+        abort(404)
 
     return post
 
@@ -181,7 +168,7 @@ def get_tags_from_post_id(post_id):
     tags = cur.fetchall()
 
     if tags is None:
-        abort(404, f"Post ID {post_id} doesn't exist.")
+        abort(404)
 
     return tags
 
@@ -197,7 +184,7 @@ def get_comments_from_post_id(post_id):
     comments = cur.fetchall()
 
     if comments is None:
-        abort(404, f"Post ID {post_id} doesn't exist.")
+        abort(404)
 
     return comments
 
@@ -226,53 +213,40 @@ def detail(id):
 def update(id):
     post = get_post(id)
     if post["author_id"] != g.user["id"]:
-        abort(403, f"Invalid access.")
+        abort(403)
 
     tag_ids = [tag["id"] for tag in get_tags_from_post_id(id)]
     all_tags = get_all_tags()
 
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
+        title = request.form["title"].replace("<script>", "&lt;script&gt;")
+        body = request.form["body"].replace("<script>", "&lt;script&gt;")
 
-        if not title:
-            error = "Title is required."
+        conn = get_conn()
+        cur = get_cur()
+        cur.execute(
+            "UPDATE posts SET title = %s, body = %s, "
+            "modified = CURRENT_TIMESTAMP WHERE id = %s;",
+            (title, body, id),
+        )
 
-        title = title.replace("<script>", "&lt;script&gt;")
-        body = body.replace("<script>", "&lt;script&gt;")
+        for tag in all_tags:
+            if request.form.get(f"tag-{tag['id']}"):
+                if tag["id"] in tag_ids:
+                    continue
+                cur.execute(
+                    "INSERT INTO post2tag (post_id, tag_id) VALUES (%s, %s);",
+                    (id, tag["id"]),
+                )
+            else:
+                cur.execute(
+                    "DELETE FROM post2tag WHERE post_id = %s AND tag_id = %s",
+                    (id, tag["id"]),
+                )
 
-        if error:
-            flash(error, "warning")
-        else:
-            conn = get_conn()
-            cur = get_cur()
-            cur.execute(
-                "UPDATE posts SET title = %s, body = %s, "
-                "modified = CURRENT_TIMESTAMP "
-                "WHERE id = %s;",
-                (title, body, id),
-            )
-
-            for tag in all_tags:
-                if request.form.get(f"tag-{tag['id']}"):
-                    if tag["id"] in tag_ids:
-                        continue
-                    cur.execute(
-                        "INSERT INTO post2tag (post_id, tag_id)"
-                        " VALUES (%s, %s);",
-                        (id, tag["id"]),
-                    )
-                else:
-                    cur.execute(
-                        "DELETE FROM post2tag "
-                        "WHERE post_id = %s AND tag_id = %s",
-                        (id, tag["id"]),
-                    )
-
-            conn.commit()
-            flash("The post was successfully edited.", "info")
-            return redirect(url_for("blog.detail", id=id))
+        conn.commit()
+        flash("글을 수정했습니다.", "info")
+        return redirect(url_for("blog.detail", id=id))
 
     return render_template(
         "blog/update.html", post=post, tag_ids=tag_ids, all_tags=all_tags
@@ -284,14 +258,14 @@ def update(id):
 def delete(id):
     post = get_post(id)
     if post["author_id"] != g.user["id"]:
-        abort(403, f"Invalid access.")
+        abort(403)
 
     conn = get_conn()
     cur = get_cur()
     cur.execute("DELETE FROM post2tag WHERE post_id = %s;", (id,))
     cur.execute("DELETE FROM posts WHERE id = %s;", (id,))
     conn.commit()
-    flash("The post was successfully deleted.", "info")
+    flash("글을 삭제했습니다.", "info")
 
     return redirect(url_for("blog.index"))
 
@@ -299,26 +273,16 @@ def delete(id):
 @BP.route("/<int:post_id>/create_comment", methods=("POST",))
 @login_required
 def create_comment(post_id):
-    body = request.form["body"]
-    error = None
+    body = request.form["body"].replace("<script>", "&lt;script&gt;")
 
-    if not body:
-        error = "Body is required."
-
-    body = body.replace("<script>", "&lt;script&gt;")
-
-    if error:
-        flash(error, "warning")
-    else:
-        conn = get_conn()
-        cur = get_cur()
-        cur.execute(
-            "INSERT INTO comments (post_id, author_id, body)"
-            " VALUES (%s, %s, %s);",
-            (post_id, g.user["id"], body),
-        )
-        conn.commit()
-        flash("The comment was successfully created.", "info")
+    conn = get_conn()
+    cur = get_cur()
+    cur.execute(
+        "INSERT INTO comments (post_id, author_id, body) VALUES (%s, %s, %s);",
+        (post_id, g.user["id"], body),
+    )
+    conn.commit()
+    flash("댓글을 등록했습니다.", "info")
 
     return redirect(url_for("blog.detail", id=post_id, _anchor="comments"))
 
@@ -333,7 +297,7 @@ def get_comment(id):
     comment = cur.fetchone()
 
     if comment is None:
-        abort(404, f"Comment id {id} doesn't exist.")
+        abort(404)
 
     return comment
 
@@ -343,13 +307,13 @@ def get_comment(id):
 def delete_comment(id, post_id):
     comment = get_comment(id)
     if comment["author_id"] != g.user["id"]:
-        abort(403, f"Invalid access.")
+        abort(403)
 
     conn = get_conn()
     cur = get_cur()
     cur.execute("DELETE FROM comments WHERE id = %s;", (id,))
     conn.commit()
-    flash("The comment was successfully deleted.", "info")
+    flash("댓글을 삭제했습니다.", "info")
 
     return redirect(url_for("blog.detail", id=post_id, _anchor="comments"))
 

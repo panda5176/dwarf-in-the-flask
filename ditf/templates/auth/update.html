@@ -1,61 +1,63 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h2 class="fw-bold border-bottom py-1">
+<h3 class="fw-bold border-bottom py-1">
     <a href="#" class="ditf-link">
-        {% block title %}{{ user['username'] }} - edit{% endblock %}
+        {% block title %}{{ user['username'] }}{% endblock %}
     </a>
-</h2>
+</h3>
 {% endblock %}
 
 {% block content %}
 <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="mx-auto">
-        <div class="my-2 py-2 row align-items-center">
-            <label for="username" class="form-label col-sm-2 col-xl-1 my-0">
-                Username
+    <div class="col">
+        <div class="py-3 row align-items-center">
+            <label for="username"
+                class="form-label col-4 col-lg-3 col-xl-2 my-0">
+                아이디
             </label>
-            <div class="col-sm-8 col-md-8 col-lg-6 mx-2">
+            <div class="col-7 col-lg-5 col-xl-4 mx-2">
                 <input name="username" id="username" required
                     class="form-control" value="{{ user['username'] }}">
             </div>
         </div>
-        <div class="my-2 py-2 row align-items-center">
-            <label for="mail" class="form-label col-sm-2 col-xl-1 my-0">
-                Mail
+        <div class="py-3 row align-items-center">
+            <label for="mail" class="form-label col-4 col-lg-3 col-xl-2 my-0">
+                메일
             </label>
-            <div class="col-sm-8 col-md-8 col-lg-6 mx-2">
+            <div class="col-7 col-lg-5 col-xl-4 mx-2">
                 <input name="mail" id="mail" type="email" required
                     class="form-control" value="{{ user['mail'] }}">
             </div>
         </div>
-        <div class="my-2 py-2 row align-items-center">
-            <label for="password" class="form-label col-sm-2 col-xl-1 my-0">
-                Password
+        <div class="py-3 row align-items-center">
+            <label for="password"
+                class="form-label col-4 col-lg-3 col-xl-2 my-0">
+                비밀번호
             </label>
-            <div class="col-sm-8 col-md-8 col-lg-6 mx-2">
+            <div class="col-7 col-lg-5 col-xl-4 mx-2">
                 <input type="password" name="password" id="password"
                     class="form-control">
             </div>
         </div>
-        <div class="my-2 py-2 row align-items-center">
+        <div class="py-3 row align-items-center">
             <label for="password-confirm"
-                class="form-label col-sm-2 col-xl-1 my-0">
-                Confirm Password
+                class="form-label col-4 col-lg-3 col-xl-2 my-0">
+                비밀번호 확인
             </label>
-            <div class="col-sm-8 col-md-8 col-lg-6 mx-2">
+            <div class="col-7 col-lg-5 col-xl-4 mx-2">
                 <input type="password" name="password-confirm"
                     id="password-confirm" class="form-control">
             </div>
         </div>
         <div class="my-2 py-2">
-            <label for="about" class="form-label">About</label>
+            <label for="about" class="form-label">소개</label>
             <textarea name="about"
                 id="mdeditor">{{ request.form['about'] or user['about'] }}</textarea>
         </div>
         <div class="text-end py-2">
-            <input type="submit" value="Update"
+            <input type="submit" value="수정"
                 class="btn btn-sm btn-outline-secondary">
         </div>
     </div>

@@ -49,7 +49,7 @@ def delete_user(id):
     cur = get_cur()
     cur.execute("DELETE FROM users WHERE id = %s;", (id,))
     conn.commit()
-    flash("The user was successfully deleted.", "info")
+    flash("사용자를 삭제했습니다.", "info")
 
     return redirect(url_for("admin.view_users"))
 
@@ -97,7 +97,7 @@ def delete_comment(id):
     cur = get_cur()
     cur.execute("DELETE FROM comments WHERE id = %s;", (id,))
     conn.commit()
-    flash("The comment was successfully deleted.", "info")
+    flash("댓글을 삭제했습니다.", "info")
 
     return redirect(url_for("admin.view_comments"))
 

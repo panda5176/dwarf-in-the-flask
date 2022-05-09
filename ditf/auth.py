@@ -13,7 +13,10 @@ from flask import (
 from flask_paginate import Pagination, get_page_args
 from markdown import markdown
 from werkzeug.exceptions import abort
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash,
+)
 
 from .db import get_conn, get_cur
 
@@ -36,7 +39,7 @@ def admin_only(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user["id"] != 1:
-            abort(403, f"Invalid access.")
+            abort(403)
 
         return view(**kwargs)
 
@@ -52,26 +55,12 @@ def register():
         mail = request.form["mail"]
         error = None
 
-        if not username:
-            error = "Username is required."
-        elif not password:
-            error = "Password is required."
-        elif not password_confirm:
-            error = "Password confirmation is required."
-        elif password != password_confirm:
-            error = "Confirm password."
-        elif not mail:
-            error = "Mail address is required."
+        if password != password_confirm:
+            error = "비밀번호를 확인하세요."
         elif re.search("[^\w\!\@\#\$\%\^\&\*]", username):
-            error = (
-                "Username with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+            error = "아이디는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
         elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
-            error = (
-                "Password with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+            error = "비밀번호는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
 
         if error:
             flash(error, "warning")
@@ -79,23 +68,25 @@ def register():
             conn = get_conn()
             cur = get_cur()
             cur.execute(
-                "SELECT username FROM users WHERE username = %s;", (username,)
+                "SELECT username FROM users WHERE username = %s;", (username,),
             )
             if cur.fetchone():
-                flash(f"User {username} is already registered.", "warning")
+                flash(f'아이디 "{username}"는 이미 등록되어있습니다.', "warning")
             else:
-                cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
+                cur.execute(
+                    "SELECT mail FROM users WHERE mail = %s;", (mail,),
+                )
 
                 if cur.fetchone():
-                    flash(f"Mail {mail} is already registered.", "warning")
+                    flash(f'메일 주소 "{mail}"는 이미 등록되어있습니다.', "warning")
                 else:
                     cur.execute(
                         "INSERT INTO users (username, password, mail) "
                         "VALUES (%s, %s, %s);",
-                        (username, generate_password_hash(password), mail),
+                        (username, generate_password_hash(password), mail,),
                     )
                     conn.commit()
-                    flash("Successfully registered.", "info")
+                    flash("가입 성공하였습니다.", "info")
                     return redirect(url_for("auth.login"))
 
     return render_template("auth/register.html")
@@ -109,15 +100,9 @@ def login():
         error = None
 
         if re.search("[^\w\!\@\#\$\%\^\&\*]", username):
-            error = (
-                "Username with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+            error = "아이디는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
         elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
-            error = (
-                "Password with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+            error = "비밀번호는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
 
         if error:
             flash(error, "warning")
@@ -131,16 +116,16 @@ def login():
             user = cur.fetchone()
 
             if user is None:
-                error = "Incorrect username."
+                error = "아이디가 없습니다."
             elif not check_password_hash(user["password"], password):
-                error = "Incorrect password."
+                error = "비밀번호가 틀렸습니다."
 
             if error:
                 flash(error, "warning")
             else:
                 session.clear()
                 session["user_id"] = user["id"]
-                flash("Successfully logged in.", "info")
+                flash("로그인했습니다.", "info")
 
                 return redirect(url_for("index"))
 
@@ -156,7 +141,7 @@ def get_user(id):
     user = cur.fetchone()
 
     if user is None:
-        abort(404, f"User ID {id} doesn't exist.")
+        abort(404)
 
     return user
 
@@ -174,7 +159,7 @@ def load_logged_in_user():
 @BP.route("/logout")
 def logout():
     session.clear()
-    flash("Successfully logged out.", "info")
+    flash("로그아웃했습니다.", "info")
 
     return redirect(url_for("index"))
 
@@ -184,7 +169,7 @@ def userinfo(id):
     cur = get_cur()
     user = get_user(id)
     about = markdown(
-        user["about"], extensions=["nl2br", "tables", "fenced_code"]
+        user["about"], extensions=["nl2br", "tables", "fenced_code"],
     )
 
     per_page = 5
@@ -225,7 +210,7 @@ def update(id):
     cur = get_cur()
     user = get_user(id)
     if user["id"] != g.user["id"]:
-        abort(403, f"Invalid access.")
+        abort(403)
 
     if request.method == "POST":
         username = request.form["username"]
@@ -235,26 +220,16 @@ def update(id):
         about = request.form["about"]
         error = None
 
-        if not username:
-            error = "Username is required."
-        elif not mail:
-            error = "Mail address is required."
-        elif re.search("[^\w\!\@\#\$\%\^\&\*]", username):
-            error = (
-                "Username with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+        if re.search("[^\w\!\@\#\$\%\^\&\*]", username):
+            error = "아이디는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
         elif re.search("[^\w\!\@\#\$\%\^\&\*]", password):
-            error = (
-                "Password with only alphabets, numbers "
-                "and _, !, @, #, $, %, ^, &, *."
-            )
+            error = "비밀번호는 영문 알파벳과 숫자, 그리고 일부 특수문자(_,!,@,#,$,%,^,&,*)만 가능합니다."
 
         if password:
             if not password_confirm:
-                error = "Password confirmation is required."
+                error = "비밀번호 확인이 필요합니다."
             elif password != password_confirm:
-                error = "Confirm password."
+                error = "비밀번호를 확인하세요."
 
         about = about.replace("<script>", "&lt;script&gt;")
 
@@ -263,17 +238,19 @@ def update(id):
         else:
             conn = get_conn()
             cur.execute(
-                "SELECT username FROM users WHERE username = %s;", (username,)
+                "SELECT username FROM users WHERE username = %s;", (username,),
             )
             new_user = cur.fetchone()
             if new_user and new_user[0] != user["username"]:
-                flash(f"User {username} is already registered.", "warning")
+                flash(f'아이디 "{username}"는 이미 등록되어있습니다.', "warning")
             else:
-                cur.execute("SELECT mail FROM users WHERE mail = %s;", (mail,))
+                cur.execute(
+                    "SELECT mail FROM users WHERE mail = %s;", (mail,),
+                )
                 new_mail = cur.fetchone()
 
                 if new_mail and new_mail[0] != user["mail"]:
-                    flash(f"Mail {mail} is already registered.", "warning")
+                    flash(f'메일 주소 "{mail}"는 이미 등록되어있습니다.', "warning")
                 else:
                     if password:
                         cur.execute(
@@ -294,8 +271,7 @@ def update(id):
                             (username, user["password"], mail, about, id,),
                         )
                     conn.commit()
-                    flash("The user information successfully edited.", "info")
+                    flash("사용자 정보를 수정했습니다.", "info")
                     return redirect(url_for("auth.userinfo", id=id))
 
     return render_template("auth/update.html", user=user)
-

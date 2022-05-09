@@ -2,16 +2,16 @@
 
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
-    <h2 class="my-0 fw-bold">
+    <h3 class="my-0 fw-bold">
         <a href="#" class="ditf-link">
-            {% block title %}{{ post['title'] }} - edit{% endblock %}
+            {% block title %}{{ post['title'] }}{% endblock %}
         </a>
-    </h2>
+    </h3>
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="submit" value="Delete"
-            onclick="return confirm('Are you sure?');"
-            class="btn btn-sm btn-danger mx-2">
+        <input type="submit" value="삭제" onclick="return confirm(
+            '정말 삭제할까요?'
+            );" class="btn btn-sm btn-danger mx-2">
     </form>
 </div>
 {% endblock %}
@@ -21,7 +21,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="my-2">
         <input name="title" value="{{ request.form['title'] or post['title'] }}"
-            required placeholder="Title" class="form-control">
+            required placeholder="제목" class="form-control">
     </div>
     <div class="my-3">
         {% for tag in all_tags %}
@@ -43,7 +43,7 @@
             id="mdeditor">{{ request.form['body'] or post['body'] }}</textarea>
     </div>
     <div class="text-end">
-        <input type="submit" value="Save"
+        <input type="submit" value="저장"
             class="btn btn-sm btn-outline-secondary">
     </div>
 </form>

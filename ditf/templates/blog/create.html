@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h2 class="fw-bold border-bottom py-1">
+<h3 class="fw-bold border-bottom py-1">
     <a href="#" class="ditf-link">
-        {% block title %}New Post{% endblock %}
+        {% block title %}새 글{% endblock %}
     </a>
-</h2>
+</h3>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="my-2">
         <input name="title" id="title" value="{{ request.form['title'] }}"
-            placeholder="Title" required class="form-control">
+            placeholder="제목" required class="form-control">
     </div>
     <div class="my-3">
         {% for tag in all_tags %}
@@ -30,7 +30,7 @@
             id="mdeditor">{{ request.form['body'] }}</textarea>
     </div>
     <div class="text-end">
-        <input type="submit" value="Save"
+        <input type="submit" value="저장"
             class="btn btn-sm btn-outline-secondary">
     </div>
 </form>

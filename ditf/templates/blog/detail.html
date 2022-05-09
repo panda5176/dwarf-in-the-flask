@@ -2,36 +2,35 @@
 
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
-    <h2 class="my-0 fw-bold">
+    <h3 class="my-0 fw-bold">
         <a href="#" class="ditf-link">
             {% block title %}{{ post['title'] }}{% endblock %}
         </a>
-    </h2>
+    </h3>
     {% if g.user['id'] == post['author_id'] %}
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="submit" value="Delete"
-            onclick="return confirm('Are you sure?');"
-            class="btn btn-sm btn-danger mx-2">
+        <input type="submit" value="삭제" onclick="return confirm(
+            '정말 삭제할까요?'
+            );" class="btn btn-sm btn-danger mx-2">
     </form>
-    <a class="btn btn-sm btn-outline-secondary"
+    <a class="btn btn-sm btn-outline-secondary text-nowrap"
         href="{{ url_for('blog.update', id=post['id']) }}">
-        Edit
+        수정
     </a>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block content %}
-<p class="fst-italic my-1 mx-1">
-    by
+<p class="my-1 mx-1">
     <a class="ditf-link fw-bold"
         href="{{ url_for('auth.userinfo', id=post['author_id']) }}">
         {{ post['username'] }}
     </a>
-    on {{ post['created'].strftime('%Y/%m/%d') }},
-    modified on {{ post['modified'].strftime('%Y/%m/%d') }},
-    {{ post['views'] }} views
+    / 작성 {{ post['created'].strftime('%Y.%m.%d') }}
+    / 수정 {{ post['modified'].strftime('%Y.%m.%d') }}
+    / 조회수 {{ post['views'] }}
 </p>
 <div class="d-flex flex-wrap align-items-center py-2">
     {% for tag in tags %}
@@ -51,14 +50,13 @@
         <div class="card-body">
             <div class="d-flex flex-nowrap align-items-center border-bottom 
             mx-1 py-1">
-                <p class="fst-italic my-0">by</p>
-                <a href="{{
-                    url_for('auth.userinfo', id=comment['author_id'])
-                }}" class="ditf-link fw-bold fst-italic mx-1">
-                    {{ comment['username'] }}
-                </a>
-                <p class="fst-italic my-0">
-                    on {{ comment['created'].strftime('%Y/%m/%d') }}
+                <p class="mx-1 my-0">
+                    <a href="{{ url_for(
+                        'auth.userinfo', id=comment['author_id'])
+                    }}" class="ditf-link fw-bold">
+                        {{ comment['username'] }}
+                    </a>
+                    / 작성 {{ comment['created'].strftime('%Y.%m.%d') }}
                 </p>
                 {% if g.user['id'] == comment['author_id'] %}
                 <form action="{{ url_for(
@@ -66,15 +64,13 @@
                 ) }}" method="post">
                     <input type="hidden" name="csrf_token"
                         value="{{ csrf_token() }}">
-                    <input type="submit" value="Delete"
-                        onclick="return confirm('Are you sure?');"
+                    <input type="submit" value="삭제"
+                        onclick="return confirm('정말 삭제할까요?');"
                         class="btn btn-sm btn-danger mx-2">
                 </form>
                 {% endif %}
             </div>
-            <div class="mx-1 my-3">
-                {{ comment['body'] }}
-            </div>
+            <div class="mx-2 my-3">{{ comment['body'] }}</div>
         </div>
     </div>
     {% endfor %}
@@ -88,18 +84,18 @@
                 {% if g.user %}
                 <div class="col-10 col-lg-11 ps-0">
                     <textarea name="body" type="text" class="form-control"
-                        placeholder="New comment"
-                        rows="3">{{ request.form['body'] }}</textarea>
+                        placeholder="새 댓글" rows="3"
+                        required>{{ request.form['body'] }}</textarea>
                 </div>
-                <input type="submit" value="Save"
+                <input type="submit" value="저장"
                     class="btn btn-sm btn-outline-secondary col-2 col-lg-1">
                 {% else %}
                 <div class="col-10 col-lg-11 ps-0">
                     <textarea name="body" type="text" class="form-control"
-                        placeholder="Log In first" rows="3"
+                        placeholder="댓글을 작성하시려면 로그인해주세요." rows="3"
                         disabled>{{ request.form['body'] }}</textarea>
                 </div>
-                <input type="submit" value="Save" disabled
+                <input type="submit" value="저장" disabled
                     class="btn btn-sm btn-outline-secondary col-2 col-lg-1">
                 {% endif %}
             </div>

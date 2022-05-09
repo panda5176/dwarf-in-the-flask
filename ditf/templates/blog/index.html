@@ -3,28 +3,27 @@
 {% block header %}
 <div class="d-flex flex-nowrap justify-content-between border-bottom py-1">
     <div class="d-flex flex-nowrap align-items-center">
-        <h2 class="my-0 fw-bold">
+        <h3 class="my-0 fw-bold">
             <a href="#" class="ditf-link">
-                {% block title %}Posts{% endblock %}
+                {% block title %}목록{% endblock %}
             </a>
-        </h2>
+        </h3>
         {% if g.user['id'] == 1 %}
         <a class="btn btn-sm btn-outline-secondary mx-2"
             href="{{ url_for('blog.create') }}">
-            New
+            새 글
         </a>
         {% endif %}
     </div>
     <form method="post">
         <div class="d-flex flex-nowrap align-items-center">
             <small class="text-muted text-nowrap mx-2">
-                Total {{ total }} posts
+                총 {{ total }}개
             </small>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input name="query" id="query" value="{{ request.form['query'] }}"
-                placeholder="Search" required
-                class="form-control form-control-sm">
-            <button type="submit" value="Search" class="btn">
+                placeholder="검색" class="form-control form-control-sm" required>
+            <button type="submit" class="btn">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -57,18 +56,18 @@
             </a>
         </h4>
         <a href="{{ url_for('blog.detail', id=post['id'], _anchor='comments')}}"
-            class="ditf-link">
+            class="ditf-link mx-1">
             ({{ total_comment }})
         </a>
     </div>
-    <p class="fst-italic">
-        by
+    <small>
         <a class="ditf-link fw-bold"
             href="{{ url_for('auth.userinfo', id=post['author_id']) }}">
             {{ post['username'] }}
         </a>
-        on {{ post['created'].strftime('%Y/%m/%d') }}, {{ post['views'] }} views
-    </p>
+        / 작성 {{ post['created'].strftime('%Y.%m.%d') }}
+        / 조회수 {{ post['views'] }}
+    </small>
 </article>
 {% if not loop.last %}
 <hr>

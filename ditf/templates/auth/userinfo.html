@@ -2,15 +2,15 @@
 
 {% block header %}
 <div class="d-flex flex-nowrap align-items-center border-bottom py-1">
-    <h2 class="my-0 fw-bold">
+    <h3 class="my-0 fw-bold">
         <a href="#" class="ditf-link">
             {% block title %}{{ user['username'] }}{% endblock %}
         </a>
-    </h2>
+    </h3>
     {% if g.user['id'] == user['id'] %}
     <a class="btn btn-sm btn-outline-secondary mx-2"
         href="{{ url_for('auth.update', id=user['id']) }}">
-        Edit
+        수정
     </a>
     {% endif %}
 </div>
@@ -18,7 +18,7 @@
 
 {% block content %}
 <div class="d-flex flex-nowrap align-items-center my-3 py-1 border-bottom">
-    <h4 class="my-0 fw-bold">About</h4>
+    <h5 class="my-0 fw-bold">소개</h5>
 </div>
 <p class="my-2">{{ about | safe }}</p>
 {% endblock %}
