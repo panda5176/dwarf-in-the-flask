@@ -32,15 +32,17 @@
     <tbody>
         {% for user in users %}
         <tr>
-            <th scope="row" class="text-center">{{ user['id'] }}</th>
-            <td class="text-center">
+            <th scope="row" class="text-center align-middle">
+                {{ user['id'] }}
+            </th>
+            <td class="text-center align-middle">
                 <a class="ditf-link"
                     href="{{ url_for('auth.userinfo', id=user['id']) }}">
                     {{ user['username'] }}
                 </a>
             </td>
-            <td class="text-center">{{ user['mail'] }}</td>
-            <td class="text-center">
+            <td class="text-center align-middle">{{ user['mail'] }}</td>
+            <td class="text-center align-middle">
                 <form action="{{ url_for('admin.delete_user', id=user['id']) }}"
                     method="post">
                     <input type="hidden" name="csrf_token"
