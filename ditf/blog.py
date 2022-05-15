@@ -119,14 +119,15 @@ def create():
 
         conn = get_conn()
         cur = get_cur()
-        cur.execute("SELECT MAX(id) FROM posts;")
-        post_id = cur.fetchone()[0] + 1
-
         cur.execute(
             "INSERT INTO posts (title, body, author_id, views) "
             "VALUES (%s, %s, %s, 0);",
             (title, body, g.user["id"]),
         )
+        conn.commit()
+
+        cur.execute("SELECT MAX(id) FROM posts;")
+        post_id = cur.fetchone()[0]
 
         for tag in all_tags:
             if request.form.get(f"tag-{tag['id']}"):
