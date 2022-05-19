@@ -15,15 +15,16 @@ pre code {
 
 p code,
 li code {
-  color: #f47067;
-  background: #eee;
+  color: #212529;
+  background: #e9ecef;
+  font-weight: bold;
   border-radius: 0.2rem;
-  padding-top: 0.2rem;
+  padding-top: 0.3rem;
   padding-bottom: 0.2rem;
   padding-left: 0.4rem;
   padding-right: 0.4rem;
-  margin-left: 0.3rem;
-  margin-right: 0.3rem;
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
 }
 
 .ditf-link {
