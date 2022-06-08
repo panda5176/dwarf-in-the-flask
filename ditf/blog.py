@@ -1,15 +1,19 @@
+import os, re
 from flask import (
     Blueprint,
+    current_app,
     flash,
     g,
     redirect,
     render_template,
     request,
+    send_file,
     url_for,
 )
 from flask_paginate import Pagination, get_page_args
 from markdown import markdown
 from werkzeug.exceptions import abort
+from werkzeug.utils import secure_filename
 
 from .auth import admin_only, login_required
 from .db import get_conn, get_cur
@@ -116,6 +120,7 @@ def create():
     if request.method == "POST":
         title = request.form["title"].replace("<script>", "&lt;script&gt;")
         body = request.form["body"].replace("<script>", "&lt;script&gt;")
+        files = request.files.getlist("file")
 
         conn = get_conn()
         cur = get_cur()
@@ -135,6 +140,23 @@ def create():
                     "INSERT INTO post2tag (post_id, tag_id) VALUES (%s, %s);",
                     (post_id, tag["id"]),
                 )
+
+        for file_obj in files:
+            if file_obj.filename == str():
+                break
+
+            upload_dir = os.path.join(current_app.instance_path, str(post_id))
+            if not os.path.isdir(upload_dir):
+                os.makedirs(upload_dir)
+
+            file_path = os.path.join(
+                upload_dir, secure_filename(file_obj.filename)
+            )
+            file_obj.save(file_path)
+            cur.execute(
+                "INSERT INTO files (post_id, file_path) VALUES (%s, %s);",
+                (post_id, file_path),
+            )
 
         conn.commit()
         flash("글을 등록했습니다.", "info")
@@ -174,6 +196,16 @@ def get_tags_from_post_id(post_id):
     return tags
 
 
+def get_files_from_post_id(post_id):
+    cur = get_cur()
+    cur.execute(
+        "SELECT id, file_path FROM files WHERE post_id = %s;", (post_id,)
+    )
+    files = cur.fetchall()
+
+    return files
+
+
 def get_comments_from_post_id(post_id):
     cur = get_cur()
     cur.execute(
@@ -194,8 +226,14 @@ def get_comments_from_post_id(post_id):
 def detail(id):
     post = get_post(id)
     tags = get_tags_from_post_id(id)
+    files = get_files_from_post_id(id)
     comments = get_comments_from_post_id(id)
     body = markdown(post["body"], extensions=["nl2br", "tables", "fenced_code"])
+
+    for file_record in files:
+        file_name = os.path.basename(file_record["file_path"])
+        file_id = file_record["id"]
+        body = re.sub(f'src="{file_name}"', f'src="{id}/{file_id}"', body)
 
     conn = get_conn()
     cur = get_cur()
@@ -209,6 +247,20 @@ def detail(id):
     )
 
 
+@BP.route("/<int:id>/<int:file_id>", methods=("GET",))
+def detail_file(id, file_id):
+    cur = get_cur()
+    cur.execute("SELECT file_path FROM files WHERE id = %s;", (file_id,))
+    file_record = cur.fetchone()
+
+    if file_record is None:
+        abort(404)
+
+    file_path = file_record["file_path"]
+
+    return send_file(file_path, download_name=os.path.basename(file_path))
+
+
 @BP.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
@@ -217,11 +269,16 @@ def update(id):
         abort(403)
 
     tag_ids = [tag["id"] for tag in get_tags_from_post_id(id)]
+    file_ids = [
+        os.path.basename(file_record["file_path"])
+        for file_record in get_files_from_post_id(id)
+    ]
     all_tags = get_all_tags()
 
     if request.method == "POST":
         title = request.form["title"].replace("<script>", "&lt;script&gt;")
         body = request.form["body"].replace("<script>", "&lt;script&gt;")
+        files = request.files.getlist("file")
 
         conn = get_conn()
         cur = get_cur()
@@ -245,12 +302,33 @@ def update(id):
                     (id, tag["id"]),
                 )
 
+        for file_obj in files:
+            if file_obj.filename == str():
+                break
+
+            upload_dir = os.path.join(current_app.instance_path, str(id))
+            if not os.path.isdir(upload_dir):
+                os.makedirs(upload_dir)
+
+            file_path = os.path.join(
+                upload_dir, secure_filename(file_obj.filename)
+            )
+            file_obj.save(file_path)
+            cur.execute(
+                "INSERT INTO files (post_id, file_path) VALUES (%s, %s);",
+                (id, file_path),
+            )
+
         conn.commit()
         flash("글을 수정했습니다.", "info")
         return redirect(url_for("blog.detail", id=id))
 
     return render_template(
-        "blog/update.html", post=post, tag_ids=tag_ids, all_tags=all_tags
+        "blog/update.html",
+        post=post,
+        tag_ids=tag_ids,
+        file_ids=file_ids,
+        all_tags=all_tags,
     )
 
 

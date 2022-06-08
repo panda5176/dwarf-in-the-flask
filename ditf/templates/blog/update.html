@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="my-2">
         <input name="title" value="{{ request.form['title'] or post['title'] }}"
@@ -38,6 +38,9 @@
         </label>
         {% endfor %}
     </div>
+    <label class="form-label" for="file">기존 파일: {{ file_ids }}</label>
+    <input class="form-control" type="file" id="file" name="file"
+        accept="image/*" multiple>
     <div class="my-2">
         <textarea name="body"
             id="mdeditor">{{ request.form['body'] or post['body'] }}</textarea>
