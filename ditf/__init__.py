@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime, timezone
 from os.path import join as path_join
 from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
