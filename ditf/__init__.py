@@ -5,7 +5,7 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement, indent
 
 from flask import Flask, render_template, send_file
 from flask_wtf.csrf import CSRFError, CSRFProtect
-from . import admin, auth, apps, blog, db
+from . import admin, auth, blog, db
 
 
 def create_app():
@@ -13,15 +13,9 @@ def create_app():
     app.config.from_json("config.json")
 
     db.init_app(app)
-    dash_apps = apps.init_dash(app)
-    app.config["dash"] = defaultdict(dict)
-    for plots_category, plots in dash_apps.items():
-        for plot_name, plot_app in plots.items():
-            app.config["dash"][plots_category][plot_name] = plot_app
 
     app.register_blueprint(admin.BP)
     app.register_blueprint(auth.BP)
-    app.register_blueprint(apps.BP)
     app.register_blueprint(blog.BP)
     app.add_url_rule("/", endpoint="index")
 
